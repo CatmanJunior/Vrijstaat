@@ -29,6 +29,25 @@ soundlist["koffiehalen"] ='koffiehalen.wav'
 soundlist["lokmachine"] ='lokmachine.wav'
 
 
-
+GREY = [200,200,200]
 WHITE= [255,255,255]
 BLACK = [0, 0, 0]
+RED = [255,0,0]
+
+# playButtonList = []
+# def play(file):
+#     winsound.PlaySound(
+#         soundlist[file], winsound.SND_FILENAME | winsound.SND_ASYNC)
+# def playlamb(z):
+#     return lambda: play(z)
+
+
+# groupA = Group("A")
+# groupB = Group("B")
+
+# pTuinA = Phase("Tuin", groupA)
+# pTuinB = Phase("Tuin", groupB)
+
+# kid1 = Kid(1)
+# kid1.setGroup(groupA)
+

@@ -1,102 +1,157 @@
-import pygame
+import datetime
 import PygameUI as pg
 import winsound
+import json
 from vrijstaatConst import *
 from vrijstaatClass import *
 import paho.mqtt.client as mqtt
 
+# MQTT Constants
 BROKERIP = "192.168.178.40"
 PORT = 1883
-TOPICLIST = ["poep","t0", "SIGN", "HB", "relais1","SP1"]
-
 CLIENTNAME = "Raspberrry"
-
 client = mqtt.Client(CLIENTNAME)
 
-signedList = []
+# Initial topiclist
+# TODO: make ESP's add their own topic
+TOPICLIST = ["poep", "t0", "SIGN", "HB", "relais1", "SP1", "relais"]
 
-ESPs = ["HolletjesButtons"]
+# Vars to identify ESPs
+ESPs = ["HolletjesButtons"]  # What does this do?
 ESPlist = []
+# Add buttons to the ESP screen
+RelaisButtons = {"Relais 1": lambda: client.publish("relais", "1"),
+                 "Relais 2": lambda: client.publish("relais", "2"),
+                 "Relais 3": lambda: client.publish("relais", "3"),
+                 "Relais 4": lambda: client.publish("relais", "4")}
+
+# Dict containing all ESP types, format: name
+ESPtypes = {"relais": ["relais", RelaisButtons]}
+
+#Puzzles
+puzzleList = []
+puzzles = {
+			"Holletje"		:	["HolletjesButtons", "HolletjesServo"],
+			"Kooitjes"		:	["Kooitjes"],
+			"Terrarium"		:	["Terrarium"],
+			"PoepScanner"	:	["Poep"],
+			"Crusher"		: 	["Crusher"],
+			"Medicein"		:	["Medicein"]}
+
+#Phases
+
+
+def JSONdump(data):
+    with open('data.json', 'w') as outfile:
+        json.dump(data, outfile)
+
+# Send signal to reset all ESPs, make them send the sign in signal again.
+# Set hardreset to True to also make them restart
+def resetESPS(hardreset=False):
+    # NOT TESTED YET
+    print("resetting")
+    txtbox.addLine("Resetting")
+    if hardreset:
+        client.publish("SIGN", "1")
+    else:
+        client.publish("SIGN", "0")
+    # Clear ESPlist
+    # TODO: Create function within ESPmodule class to set a var for SIGNED
+    ESPlist[:] = []
+
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
-	print("Connected with result code "+str(rc))
-	for topic in TOPICLIST:
-		client.subscribe(topic) #Subscribe to the topic
+    print("Connected with result code " + str(rc))
+    for topic in TOPICLIST:
+        client.subscribe(topic)  # Subscribe to the topic
+
 
 def on_message(client, userdata, msg):
-	print("New Message -> Topic: " + msg.topic + " Payload: " + str(msg.payload))
-	if msg.topic == "SIGN":
+        # Convert the message to string. Original it is a byte printed as b'msg'
+    msg.payload = str(msg.payload)[2:-1]
+    print("New Message -> Topic: " + msg.topic +
+          " Payload: " + str(msg.payload))
+    # print the line to the inprogram terminal
+    txtbox.addLine("New Message -> Topic: " + msg.topic +
+                   " Payload: " + str(msg.payload))
+    # Check if the topic matches any topic of the ESPs
+    for esp in ESPlist:
+        if esp.topic == msg.topic:
+            esp.textbox.addLine(datetime.datetime.now().strftime(
+                "%H:%M:%S") + ": " + msg.payload)
+            txtbox.addLine("message add to: " + esp.name)
 
-		signedList.append(msg.payload)
-		con = pg.Container("name", (100,100),(500,500),WHITE)
-		# ESPlist.append(ESPModule(msg.payload, msg.payload, con))
-		dropdownButton.addObject(pg.DropDown(msg.payload, (0,50),(80,30),WHITE, msg.payload, function = lambda : con.setVisable(not con.visable)))
+    if msg.topic == "SIGN":
+        if msg.payload == "0" or msg.payload == "1":
+        	pass
+            #creates a loop so do this different, meant to also be called from a different ESP
+            #resetESPS(hardreset=msg.payload)
+        else:
+            #if the send message in SIGN is in the ESPtype-dict, which keys contain the names.
+            for topic in ESPtypes:
+                if topic in msg.payload:
+                    txtbox.addLine("Topic found: " + topic)
+                    #Create a container for this ESP
+                    container = pg.Container(
+                        msg.payload + "Container", (535, 80), (530, 530), BLACK, visable=False, border = 5, bordercolor=WHITE)
+                    #Create a ESP instance
+                    #esptype[topic][0] contains the name
+                    #esptype[topic][1] contains the buttons
+                    ESPlist.append(
+                        ESPModule(msg.payload, ESPtypes[topic][0], container, **ESPtypes[topic][1]))
+                    txtbox.addLine("Module created: " + ESPtypes[topic][0])
+                    #Add a button to the dropdown
+                    ESPDropdownButton.addObject(pg.DropDown(msg.payload, (0, 50), 
+                    	(80, 50), WHITE, msg.payload, function=lambda: container.setVisable(not container.visable)))
+                    break
+            else:
+                txtbox.addLine("Topic not found in type list")
 
+#Connect to the broker
 def mqqtConnect():
-	print("Connecting")
-	try:
-		client.on_connect = on_connect
-		client.on_message = on_message
-		client.connect(BROKERIP, port=PORT, keepalive=180)
-		client.loop_start()
-		print("Connected")
-		return True
-	except:
-		print("Cannot connect to the MQQT Server")
-		return False
+    print("Connecting...")
+    try:
+        client.on_connect = on_connect
+        client.on_message = on_message
+        client.connect(BROKERIP, port=PORT, keepalive=180)
+        client.loop_start()
+        print("Connected")
+        return True
+    except:
+        print("Cannot connect to the MQQT Server")
+        return False
 
 mqqtConnect()
 
-pg.PyInit(1000,1000)
+#init pygame from the PygameUI module
+pg.PyInit(1080, 720)
 
-playButtonList = []
+container = pg.Container("name", (150, 100), (300, 300), BLACK, visable=True, border=2, bordercolor = WHITE)
 
-def play(file):
-	winsound.PlaySound(soundlist[file], winsound.SND_FILENAME|winsound.SND_ASYNC)
+ESPDropdownButton = pg.DropDownButton("ESP", (5, 5), (100, 50), WHITE, "ESPS", visable=True)
 
-def playlamb(z):
-	return lambda : play(z)
+ResetButton = pg.Button(
+    "Reset", (110, 5), (100, 50), WHITE, text="Reset ESPs", visable=True, function=lambda: client.publish("SIGN", "0"))
 
-groupA = Group("A")
-groupB = Group("B")
+FakeButton = pg.Button(
+    "Fake", (215, 5), (100, 50), WHITE, text="Fake", visable=True, function=lambda: client.publish("SIGN", "relais1"))
 
-pTuinA = Phase("Tuin", groupA)
-pTuinB = Phase("Tuin", groupB)
+txtbox = pg.TextBox("Txtbox1", (5, 515), (500, 200), "TEXTBOX",
+                    visable=True, showtitle=True, color=BLACK, max_lines=10, border = 2, bordercolor=WHITE)
+txtbox.addLine("debugbox")
 
-kid1 = Kid(1)
-kid1.setGroup(groupA)
+timer = pg.TimerObject()
 
-container = pg.Container("name", (150,100),(300,300), WHITE, visable = True)
-container.addObject(pg.Button("har", (200,60), (50,50), text = "haha", function = lambda : relaisContainer.setVisable(not relaisContainer.visable)))
-container.addObject(pg.Text("a",(10,10), "Mqqt"))
-container.addObject(pg.Text("a",(10,50), "Connected:"))
-mqqttext = container.addObject(pg.Text("a",(10,80), "Mqqt"))
+TimerButton = pg.Button(
+    "TimerButton", (320, 5), (100, 50), WHITE, text="0", visable=True, function=lambda: timer.reset())
 
-relaisContainer = pg.Container("name", (100,100),(500,500),WHITE)
-relaisContainer.addObject(pg.Button("bla", (20,20), (50,50), color = WHITE, text = "Relais1", function=lambda : client.publish("SP1", "3")))
-relaisContainer.addObject(pg.Button("bla", (90,20), (50,50), color = WHITE,text = "Relais2"))
-relaisContainer.addObject(pg.Button("bla", (160,20), (50,50),color = WHITE, text = "Relais3"))
-relaisContainer.addObject(pg.Button("bla", (230,20), (50,50),color = WHITE, text = "Relais4"))
-relaisContainer.addObject(pg.Button("bla", (20,50), (50,50), color = WHITE, text = "Relais1", function=lambda : client.publish("SP1", "4")))
-
-dropdownButton = pg.DropDownButton("ESP", (0,30),(100,50), WHITE, "ESPS", visable = True)
-
-txtbox = relaisContainer.addObject(pg.TextBox("Txtbox1", (100,100),(300,300), "TEXTBOX", visable = True))
-txtbox.addLine("GAGA")
-txtbox.addLine("BLABLA")
-
-# relaisContainer.setVisable(True)
-dropdownButton.setVisable(True)
 
 def game():
+    TimerButton.text = str(int(timer.currentTime/1000))
 
-	_txt = ""
-	for i in signedList: 
-		_txt += str(i)[2:-1]
-	mqqttext.text = _txt + '\n'
 gameloop = True
 
 while gameloop:
-	game()
-	gameloop = pg.GameLoop()
+    game()
+    gameloop = pg.GameLoop()
