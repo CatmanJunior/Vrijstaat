@@ -6,7 +6,32 @@ from vrijstaatConst import *
 from vrijstaatClass import *
 import paho.mqtt.client as mqtt
 
+#TODOLIST
+"""
+- Create logging system
+- send sms/email when there is an error
+    - when the program crash, send stacktrace including log
+    - When an ESP is not connected send multiple restarts, give an error on screen and send e-mail/sms
+- Send Email after each playtrough with data about the playtrough (times, hints given, player data)
+- Create scalability
+- The playtrough needs to be automated
+    - Just give a start signal, and at some points a que where there isnt a device that controls the que
+    - Gives signals when a certain phase is behind scedule. 
+    - Give hints based on time and puzzles
+- Text to speech for debugging
+- Soundplayer based on phase
+- Create a check button, which checks if everything is ready
+    - ESPS connected
+    - Every setting reset
+-Activebox, turn visability off when there is a new menu popping up
+-Hint system
+    - Sending voice to bluetooth devices?
+    - Hints to players trough lights?
+    - Hint to gamemasters?
+"""
+
 # MQTT Constants
+MQTTON = True
 BROKERIP = "192.168.178.40"
 PORT = 1883
 CLIENTNAME = "Raspberrry"
@@ -19,11 +44,12 @@ TOPICLIST = ["poep", "t0", "SIGN", "HB", "relais1", "SP1", "relais"]
 # Vars to identify ESPs
 ESPs = ["HolletjesButtons"]  # What does this do?
 ESPlist = []
+
 # Add buttons to the ESP screen
-RelaisButtons = {"Relais 1": lambda: client.publish("relais", "1"),
-                 "Relais 2": lambda: client.publish("relais", "2"),
-                 "Relais 3": lambda: client.publish("relais", "3"),
-                 "Relais 4": lambda: client.publish("relais", "4")}
+RelaisButtons = {"Relais 1": lambda: SendMqtt("relais", "1"),
+                 "Relais 2": lambda: SendMqtt("relais", "2"),
+                 "Relais 3": lambda: SendMqtt("relais", "3"),
+                 "Relais 4": lambda: SendMqtt("relais", "4")}
 
 # Dict containing all ESP types, format: name
 ESPtypes = {"relais": ["relais", RelaisButtons]}
@@ -39,7 +65,12 @@ puzzles = {
 			"Medicein"		:	["Medicein"]}
 
 #Phases
+phases = {"A":[puzzles["Holletje"]]}
 
+
+def SendMqtt(topic, msg):
+    if MQTTON:
+        client.publish(topic, msg)
 
 def JSONdump(data):
     with open('data.json', 'w') as outfile:
@@ -52,9 +83,9 @@ def resetESPS(hardreset=False):
     print("resetting")
     txtbox.addLine("Resetting")
     if hardreset:
-        client.publish("SIGN", "1")
+        SendMqtt("SIGN", "1")
     else:
-        client.publish("SIGN", "0")
+        SendMqtt("SIGN", "0")
     # Clear ESPlist
     # TODO: Create function within ESPmodule class to set a var for SIGNED
     ESPlist[:] = []
@@ -122,7 +153,8 @@ def mqqtConnect():
         print("Cannot connect to the MQQT Server")
         return False
 
-mqqtConnect()
+if MQTTON:
+    mqqtConnect()
 
 #init pygame from the PygameUI module
 pg.PyInit(1080, 720)
@@ -132,10 +164,10 @@ container = pg.Container("name", (150, 100), (300, 300), BLACK, visable=True, bo
 ESPDropdownButton = pg.DropDownButton("ESP", (5, 5), (100, 50), WHITE, "ESPS", visable=True)
 
 ResetButton = pg.Button(
-    "Reset", (110, 5), (100, 50), WHITE, text="Reset ESPs", visable=True, function=lambda: client.publish("SIGN", "0"))
+    "Reset", (110, 5), (100, 50), WHITE, text="Reset ESPs", visable=True, function=lambda: SendMqtt("SIGN", "0"))
 
 FakeButton = pg.Button(
-    "Fake", (215, 5), (100, 50), WHITE, text="Fake", visable=True, function=lambda: client.publish("SIGN", "relais1"))
+    "Fake", (215, 5), (100, 50), WHITE, text="Fake", visable=True, function=lambda: SendMqtt("SIGN", "relais1"))
 
 txtbox = pg.TextBox("Txtbox1", (5, 515), (500, 200), "TEXTBOX",
                     visable=True, showtitle=True, color=BLACK, max_lines=10, border = 2, bordercolor=WHITE)
