@@ -1,7 +1,6 @@
 import PygameUI as pg
 from vrijstaatConst import *
 
-
 class Group():
 	def __init__(self, name):
 		self.name = name
@@ -15,7 +14,6 @@ class Group():
 
 	def setPhase(self, phase):
 		self.phase = phase
-
 
 class Phase():
 	def __init__(self, name, group):
@@ -62,7 +60,7 @@ class ESPModule():
 		self.topic = topic
 		self.container = container
 		self.textbox = self.container.addObject(pg.TextBox(
-		    "Txtbox1", (275, 25), (250, 495), "TEXTBOX", visable=True, max_lines=16, border = 2, color = BLACK, bordercolor = WHITE))
+		    "Txtbox1", (290, 25), (200, 490), "TEXTBOX", visable=True, max_lines=16, border = 2, color = BLACK, bordercolor = WHITE))
 		
 		i = 0
 		for kw in kwargs:
@@ -74,3 +72,4 @@ class ESPModule():
 			"close", (self.container.rect.w-20, 0),
 			(15, 15), color=RED, text="",
 			function = lambda: self.container.setVisable(False), textcolor=WHITE))
+

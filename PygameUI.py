@@ -1,16 +1,21 @@
 import pygame
 from vrijstaatConst import *
+from gtts import gTTS
 window = ""
 font = ""
 gameLoop = False
 clock = ""
-
 ObjectList = []
 ButtonList = []
 TimerList = []
 
-
-
+#Turn this into sound from pygame
+def playTTS(txt):
+	tts = gTTS(text=txt, lang='en')
+	tts.save("text1" + ".mp3")
+	pygame.mixer.music.load('text1.mp3')
+	pygame.mixer.music.play()
+	
 #USE THIS IF YOURE NOT INITIATING IT ANYWHERE ELSE
 def PyInit(w = 800,h = 800, title = "Screen" ,FULLSCREENMODE = False):
 	global font, window, gameLoop, clock
@@ -21,7 +26,6 @@ def PyInit(w = 800,h = 800, title = "Screen" ,FULLSCREENMODE = False):
 	gameLoop = True
 	font = pygame.font.SysFont("arial", 18)
 
-
 #THIS ONE IF YOU JUST WANT TO USE THE UI ELEMENTS
 def UIinit(win, fon):
 	global window, font
@@ -31,6 +35,8 @@ def UIinit(win, fon):
 def GameLoop():
 	gameloop = True
 	for event in pygame.event.get():
+		# if event.type==SONG_END:
+		# 	pass
 		if (event.type==pygame.QUIT):
 			
 			gameloop = False
@@ -131,26 +137,49 @@ class Container(UIObject):
 		for obj in self.objectList:
 			obj.setVisable(vis)
 
-class TextBox(Container):
-		def __init__(self, name, loc, size, text = "", color = BLACK, win = "", showtitle = False,  visable = False, textcolor = BLACK, max_lines = 15, border = 0, bordercolor = BLACK):
-			super().__init__(name,loc,size,color = color,win = win,visable = visable, showtitle = showtitle, text = text, textcolor = textcolor, border = border, bordercolor = bordercolor)
-			self.lines = []
-			self.textColor = textcolor
-			self.max_lines = max_lines
-		def addLine(self, line):
-			self.lines.append(line)
-			if len(self.lines) > self.max_lines:
-				self.lines.pop(0)
+class HeaderContainer(Container):
+	def __init__(self, name, loc, size, text = "", color = BLACK, win = "", showtitle = False,  visable = False, textcolor = BLACK, border = 0, bordercolor = BLACK):
+		super().__init__(name,loc,size,color = color,win = win,visable = visable, showtitle = showtitle, text = text, textcolor = textcolor, border = border, bordercolor = bordercolor)
+		self.objectList = []
 
-		def draw(self):
-			super().draw()
-			self.window.blit(self.font.render(self.text, True, self.color),(self.rect.topleft[0] ,self.rect.topleft[1]-20))
-			i = 5
-			for line in self.lines:
-				self.window.blit(self.font.render(line, True, WHITE),(self.rect.topleft[0]+ 5, self.rect.topleft[1] + i))
-				i += 20
-				
+	def addObject(self, obj):
+		if len(self.objectList) != 0:
+			x = self.objectList[-1].rect.topright[0] + 5
 			
+		else:
+			x = self.rect.x + 5
+			
+		if obj.rect.height > self.rect.height:
+			self.rect.height = obj.rect.height + 10
+		obj.rect.x = x
+		obj.rect.y = self.rect.y + 5
+		self.objectList.append(obj)
+		obj.visable = self.visable
+		return obj
+
+		
+class TextBox(Container):
+	def __init__(self, name, loc, size, text = "", color = BLACK, win = "", showtitle = False,  visable = False, textcolor = BLACK, max_lines = 15, border = 0, bordercolor = BLACK):
+		super().__init__(name,loc,size,color = color,win = win,visable = visable, showtitle = showtitle, text = text, textcolor = textcolor, border = border, bordercolor = bordercolor)
+		self.lines = []
+		self.textColor = textcolor
+		self.max_lines = max_lines
+	def addLine(self, line):
+		self.lines.append(line)
+		if len(self.lines) > self.max_lines:
+			self.lines.pop(0)
+
+	def draw(self):
+		super().draw()
+		self.window.blit(self.font.render(self.text, True, self.color),(self.rect.topleft[0] ,self.rect.topleft[1]-20))
+		i = 5
+		for line in self.lines:
+			self.window.blit(self.font.render(line, True, WHITE),(self.rect.topleft[0]+ 5, self.rect.topleft[1] + i))
+			i += 20
+	
+	def clear(self):
+		self.lines[:] = []
+		
 
 class Button(UIObject):
 	def __init__(self, name, loc, size, color = BLACK, win = "", function = lambda : print(), text = "", visable = False, textcolor = BLACK):
