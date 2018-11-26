@@ -22,6 +22,11 @@ class Phase():
 		self.puzzels = []
 		self.active = False
 		self.done = False
+		self.timer = pg.TimerObject()
+		self.container = pg.Container(self.name + "Container", **CONTAINERS["MainContainer"])
+		
+	def startTimer(self,timer):
+		self.timer.reset()
 
 	def addPuzzel(self, puzzel):
 		self.puzzels.append(puzzel)
@@ -38,8 +43,9 @@ class Puzzel():
 		self.name = name
 		self.state = 0
 		self.fixed = False
-		self.topics = [topic]
-
+		self.topics = topic
+		self.container = pg.Container(self.name + "Container", **CONTAINERS["SubContainer"])
+                    
 	def setFixed(self):
 		self.fixed = True
 
@@ -55,21 +61,26 @@ class Kid():
 
 
 class ESPModule():
-	def __init__(self, name, topic, container, **kwargs):
+	def __init__(self, name, topic, **kwargs):
+		
 		self.name = name
 		self.topic = topic
-		self.container = container
-		self.textbox = self.container.addObject(pg.TextBox(
-		    "Txtbox1", (290, 25), (200, 490), "TEXTBOX", visable=True, max_lines=16, border = 2, color = BLACK, bordercolor = WHITE))
-		
+		self.container = pg.Container(self.name + "ESPContainer", **CONTAINERS["SubContainer"])
+		self.textbox = self.container.addObject(
+			pg.TextBox(self.name + "ESPMqttTextBox", **TEXTBOXES["ESPMqttTextBox"]))
+		self.container.title = self.name    
 		i = 0
+		
 		for kw in kwargs:
-			self.container.addObject(pg.Button(str(kw) + "ESPButton", (20, 20 + i * 55),
-			                         (80, 50), color=WHITE, text=str(kw), function=kwargs[kw]))
+			
+			but = pg.Button(str(kw) + "ESPButton", **BUTTONS["ResetButton"])
+			but.rect.x = 20
+			but.rect.y = 20 + i * 55
+			print("nuh uh")
+			but.size = (80, 50)
+			but.text = str(kw)
+			but.function = kwargs[kw]
+			self.container.addObject(but)
+		
 			i += 1
-
-		but = self.container.addObject(pg.Button(
-			"close", (self.container.rect.w-20, 0),
-			(15, 15), color=RED, text="",
-			function = lambda: self.container.setVisable(False), textcolor=WHITE))
 

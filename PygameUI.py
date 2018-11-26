@@ -8,6 +8,7 @@ clock = ""
 ObjectList = []
 ButtonList = []
 TimerList = []
+ObjectDict = {}
 
 #Turn this into sound from pygame
 def playTTS(txt):
@@ -81,18 +82,17 @@ class TimerObject():
 		self.startTime = pygame.time.get_ticks()
 
 class UIObject():
-	def __init__(self, name, loc, size, color = BLACK, win = "", visable = False, ):
-		if win == "":
-			win = window
-		self.window = win
-		self.visable = visable
+	def __init__(self, name, **kwargs):
+		self.window = window
 		self.name = name
-		self.rect = pygame.Rect(loc[0],loc[1],size[0],size[1])
-		self.color = color
+		self.visable = kwargs["visable"]
+		self.rect = pygame.Rect(kwargs["location"][0],kwargs["location"][1],kwargs["size"][0],kwargs["size"][1])
+		self.color = kwargs["color"]
 		self.highLightColor = GREY
 		self.highlighted = False
-		self.realColor = color
+		self.realColor = self.color
 		ObjectList.append(self)
+		ObjectDict[self.name] = self
 
 	def setVisable(self, vis):
 		self.visable = vis
@@ -106,19 +106,20 @@ class UIObject():
 		self.color = self.highLightColor
 
 class Container(UIObject):
-	def __init__(self, name, loc, size, color = BLACK, win = "", visable = False, showtitle = False, text = "", textcolor = WHITE, border = 0, bordercolor = BLACK):
-		super().__init__(name,loc,size,color,win,visable)
-		self.textColor = textcolor
+	def __init__(self, name, **kw):
+		super().__init__(name, **kw)
+	
+		
 		self.font = pygame.font.SysFont("arial", 14)
-		self.showTitle = showtitle
+		self.showTitle = kw["showtitle"]
 		self.objectList = []
-		self.text = text
-		self.border = border
-		self.borderColor = bordercolor
-
+		self.title = kw["title"]
+		self.border = kw["border"]
+		self.borderColor = kw["bordercolor"]
+		self.textColor = WHITE
 	def draw(self):
 		if self.showTitle:
-			self.window.blit(self.font.render(self.name, True, self.textColor),(self.rect.topleft[0], self.rect.topleft[1] - 20))
+			self.window.blit(self.font.render(self.title, True, self.textColor),(self.rect.topleft[0], self.rect.topleft[1] - 20))
 		pygame.draw.rect(self.window, self.color, self.rect, 0)
 		if self.border != 0:
 			pygame.draw.rect(self.window, self.borderColor, self.rect, self.border)
@@ -138,10 +139,6 @@ class Container(UIObject):
 			obj.setVisable(vis)
 
 class HeaderContainer(Container):
-	def __init__(self, name, loc, size, text = "", color = BLACK, win = "", showtitle = False,  visable = False, textcolor = BLACK, border = 0, bordercolor = BLACK):
-		super().__init__(name,loc,size,color = color,win = win,visable = visable, showtitle = showtitle, text = text, textcolor = textcolor, border = border, bordercolor = bordercolor)
-		self.objectList = []
-
 	def addObject(self, obj):
 		if len(self.objectList) != 0:
 			x = self.objectList[-1].rect.topright[0] + 5
@@ -159,11 +156,12 @@ class HeaderContainer(Container):
 
 		
 class TextBox(Container):
-	def __init__(self, name, loc, size, text = "", color = BLACK, win = "", showtitle = False,  visable = False, textcolor = BLACK, max_lines = 15, border = 0, bordercolor = BLACK):
-		super().__init__(name,loc,size,color = color,win = win,visable = visable, showtitle = showtitle, text = text, textcolor = textcolor, border = border, bordercolor = bordercolor)
+	def __init__(self, name, **kw):
+		super().__init__(name, **kw)
 		self.lines = []
-		self.textColor = textcolor
-		self.max_lines = max_lines
+		self.textColor = kw["textcolor"]
+		self.max_lines = kw["maxlines"]
+
 	def addLine(self, line):
 		self.lines.append(line)
 		if len(self.lines) > self.max_lines:
@@ -171,7 +169,6 @@ class TextBox(Container):
 
 	def draw(self):
 		super().draw()
-		self.window.blit(self.font.render(self.text, True, self.color),(self.rect.topleft[0] ,self.rect.topleft[1]-20))
 		i = 5
 		for line in self.lines:
 			self.window.blit(self.font.render(line, True, WHITE),(self.rect.topleft[0]+ 5, self.rect.topleft[1] + i))
@@ -182,11 +179,11 @@ class TextBox(Container):
 		
 
 class Button(UIObject):
-	def __init__(self, name, loc, size, color = BLACK, win = "", function = lambda : print(), text = "", visable = False, textcolor = BLACK):
-		super().__init__(name,loc,size,color,win,visable)
-		self.textColor = textcolor
-		self.function = function
-		self.text = text
+	def __init__(self, name, **kw):
+		super().__init__(name,**kw)
+		self.textColor = kw["textcolor"]
+		self.function = lambda : print()
+		self.text = kw["text"]
 		self.font = pygame.font.SysFont("arial", 18)
 		ButtonList.append(self)
 		
@@ -200,24 +197,24 @@ class Button(UIObject):
 		return self.function()
 
 class Text(UIObject):
-	def __init__(self, name, loc, text = "", color = BLACK, win = "", visable = False):
-		super().__init__(name,loc,(50,50),color,win,visable)
-		self.text = text
-		self.font = pygame.font.SysFont("arial", 18)
+	def __init__(self, name, **kw):
+		super().__init__(name,**kw)
+		self.text = kw["text"]
+		self.font = pygame.font.SysFont("arial", kw["fontsize"])
 		
 	def draw(self):
 		self.window.blit(self.font.render(self.text, True, self.color),self.rect.topleft)
 		super().draw()
 
 class DropDownButton(Button):
-	def __init__(self, name, loc, size, color, text, win = "", visable = False, function = lambda: print(), textcolor = BLACK):
-		super().__init__(name,loc,size,color,win,function,text,visable,textcolor)
+	def __init__(self, name, **kw):
+		super().__init__(name,**kw)
 		self.dropdown = []
 		self.collapsed = True
 	
 	def addObject(self, obj):
 		obj.rect.x += self.rect.x 
-		obj.rect.y += self.rect.y + len(self.dropdown) * 55
+		obj.rect.y += self.rect.y + len(self.dropdown) * 30
 		self.dropdown.append(obj)
 		obj.visable = not self.collapsed
 		return obj
@@ -238,8 +235,9 @@ class DropDownButton(Button):
 			drop.visable = not drop.visable
 
 class DropDown(Button):
-	def __init__(self, name, loc, size, color, text, win = "", visable = False, function = lambda: print(),  textcolor = BLACK):
-		super().__init__(name,loc,size,color,win,function,text,visable, textcolor)
+	def __init__(self, name, text, **kw):
+		kw["text"] = text
+		super().__init__(name,**kw)
 		
 	def draw(self, font = font):
 		super().draw()

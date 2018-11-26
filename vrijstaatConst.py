@@ -34,6 +34,217 @@ WHITE= [255,255,255]
 BLACK = [0, 0, 0]
 RED = [255,0,0]
 
+
+#Puzzles
+puzzleList = []
+puzzles = {
+			"Holletje"		:	["HolletjesButtons", "HolletjesServo"],
+			"Kooitjes"		:	["Kooitjes"],
+			"Terrarium"		:	["Terrarium"],
+			"PoepScanner"	:	["Poep"],
+			"Crusher"		: 	["Crusher"],
+			"Medicein"		:	["Medicein", "ColorScanner", "Kastje", "Panel"],
+			"Quiz"			:	["Quiz"]}
+
+
+#Phases
+phaseList = []
+phases = {	"GETIN": {"puzzles" : [], "Name": "Get in"},
+			"INTRO": {"puzzles" : [], "Name": "Intro"},
+			"A": {"puzzles":["Holletje"], "Name": "Tuin"},
+			"B": {"puzzles":["Quiz","Medicein","Crusher"], "Name": "Lab"}}
+
+BUTTONS = {
+	"FakeESPButton" : {
+		"location"		:	(320, 5),
+		"size"			:	(100,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Fake",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		},
+
+	"StartGameButton" : {
+		"location"		:	(320, 5),
+		"size"			:	(100,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Start",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		},
+
+	"NextPhaseButton" : {
+		"location"		:	(320, 5),
+		"size"			:	(100,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Next",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		},
+
+	"MainWindowButton" : {
+		"location"		:	(320, 5),
+		"size"			:	(100,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Main",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		},
+
+	"ResetButton" : {
+		"location"		:	(320, 5),
+		"size"			:	(100,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Reset",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		},
+
+
+}
+
+DROPDOWNBUTTONS = {
+	"ESPDropdownButton" : {
+		"location"		:	(320, 5),
+		"size"			:	(100,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"ESPS",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		},
+
+	"PhaseDropdownButton" : {
+		"location"		:	(320, 5),
+		"size"			:	(100,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Phases",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		},
+
+	"PuzzelDropdownButton" : {
+		"location"		:	(320, 5),
+		"size"			:	(100,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Puzzles",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		},
+}
+
+DROPDOWNITEM = {
+	"location"		:	(0, 50),
+	"size"			:	(80,30),
+	"color"			:	WHITE,
+	"visable"		:	False,
+	"fontsize"		:	12,
+	"textcolor"		:	BLACK,
+	}
+
+HEADER = {
+	"location"		:	(0, 0),
+	"size"			:	(1080, 10),
+	"color"			:	BLACK,
+	"visable"		:	True,
+	"border"		:	2,
+	"bordercolor"	:	WHITE,
+	"objects"		:	["StartGameButton", 
+						"MainWindowButton", 
+						"ResetButton", 
+						"PhaseDropdownButton", 
+						"PuzzelDropdownButton",
+						"ESPDropdownButton",
+						"FakeESPButton"],
+	"title"			:	"Header",
+	"showtitle"		:	False,
+}
+
+CONTAINERS = {
+	"MainContainer" : {
+		"location"		:	(5, 100),
+		"size"			:	(550, 400),
+		"color"			:	BLACK,
+		"visable"		:	True,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"objects"		:	["MainProgressTextBox", "NextPhaseButton", "GameTimerText"],
+		"title"			:	"Main",
+		"showtitle"		:	True,
+		},
+
+	"SubContainer" : {
+		"location"		:	(570, 80),
+		"size"			:	(500, 530),
+		"color"			:	BLACK,
+		"visable"		:	False,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"objects"		:	[],
+		"title"			:	"Sub",
+		"showtitle"		:	True,
+		}
+}
+
+TEXTBOXES = {
+	"MainProgressTextBox" : {
+		"location"		:	(10,10),
+		"size"			:	(150,200),
+		"color"			:	BLACK,
+		"visable"		:	False,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"title"			:	"Progress",
+		"showtitle"		:	True,
+		"maxlines"		:	10,
+		"textcolor"		:	WHITE,
+		},
+
+	"MainDebugTextBox" : {
+		"location"		:	(5, 515),
+		"size"			:	(500, 200),
+		"color"			:	BLACK,
+		"visable"		:	True,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"title"			:	"Debug Messages",
+		"showtitle"		:	True,
+		"maxlines"		:	10,
+		"textcolor"		:	WHITE,
+		},
+
+	"ESPMqttTextBox" : {
+		"location"		:	(290, 25),
+		"size"			:	(200, 490),
+		"color"			:	BLACK,
+		"visable"		:	False,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"title"			:	"Mqtt Messages",
+		"showtitle"		:	True,
+		"maxlines"		:	16,
+		"textcolor"		:	WHITE,
+		}
+}
+
+TEXTOBJECTS = {
+	"GameTimerText" : {
+			"location"		:	(200,10),
+			"size"			:	(50,50),
+			"color"			:	WHITE,
+			"visable"		:	True,
+			"text"			:	"Time: ",
+			"fontsize"		:	12,
+			},
+}
+
 # playButtonList = []
 # def play(file):
 #     winsound.PlaySound(
