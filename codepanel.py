@@ -28,7 +28,8 @@ def on_message(client, userdata, msg):
     msg.payload = str(msg.payload)[2:-1]
     print("New Message -> Topic: " + msg.topic +
           " Payload: " + str(msg.payload))
-
+    if msg.topic == "panel":
+    	txt.text = "Kleur Code: " + msg.payload
 def MQTTConnect():
     print("Connecting...")
     try:
@@ -51,7 +52,7 @@ BUTTONS = {
 	"BUT" : {
 		"type"			:	pg.Button,
 		"location"		:	(320, 5),
-		"size"			:	(150,150),
+		"size"			:	(100,100),
 		"color"			:	WHITE,
 		"visable"		:	True,
 		"text"			:	"Fake",
@@ -77,24 +78,43 @@ CONTAINER = {
 
 }
 CON = {
-	"START" : {
-		"type"			:	pg.Button,
-		"location"		:	(320, 5),
-		"size"			:	(100,50),
-		"color"			:	WHITE,
+	"codetxt" : {
+			"location"		:	(50,H - 50),
+			"size"			:	(50,50),
+			"color"			:	WHITE,
+			"visable"		:	True,
+			"text"			:	"Code: ",
+			"fontsize"		:	30,
+			},
+					"BLA" : {
+		"location"		:	(W/2, 0),
+		"size"			:	(10, H),
+		"color"			:	BLACK,
 		"visable"		:	True,
-		"text"			:	"Fake",
-		"fontsize"		:	12,
-		"textcolor"		:	BLACK,
+		"border"		:	8,
+		"bordercolor"	:	WHITE,
+		"objects"		:	[],
+		"title"			:	"Main",
+		"showtitle"		:	True,
 		},
+
+		"ColorText" : {
+			"location"		:	(600,H/2),
+			"size"			:	(50,50),
+			"color"			:	WHITE,
+			"visable"		:	True,
+			"text"			:	"Kleur Code: ",
+			"fontsize"		:	30,
+			},
+
 }
 
 buttonlist = "1 2 3 A 4 5 6 B 7 8 9 C * 0 # D ".split()
 
 temp_container = pg.Container("main", **CONTAINER["MainContainer"])
-
-# pg.Button("START", **CON["START"])
-
+codetxt = pg.Text("codetxt", **CON["codetxt"])
+txt = pg.Text("ColorText", **CON["ColorText"])
+grrt = pg.Container("ColorTexaat", **CON["BLA"])
 code = ""
 g = 0;
 print(codelist)
@@ -102,9 +122,12 @@ def CodeCheck(c):
 	global g
 	global code
 	code += c
+	codetxt.text = "Code: " + code
 	print(code)
+	if code == "#":
+		return
 	if c == "#":
-		if c in str(codelist):
+		if code in str(codelist):
 			print("yasss")
 			client.publish(kasttopic, g)
 			g += 1
@@ -120,9 +143,9 @@ for i in buttonlist:
 	tmp = pg.Button(i, **BUTTONS["BUT"])
 	tmp.function =  convert(i)
 	tmp.text = i
-	tmp.rect.x = W/2-330+(j%4)*170
+	tmp.rect.x = 20+(j%4)*110
 	
-	tmp.rect.y = H/2-330+int((j/4))*170
+	tmp.rect.y = H/2-215+int((j/4))*110
 	j+=1
 
 # for c in CON:
