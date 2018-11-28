@@ -1,6 +1,9 @@
 import pygame
-from vrijstaatConst import *
+
 from gtts import gTTS
+
+
+
 window = ""
 font = ""
 gameLoop = False
@@ -10,13 +13,29 @@ ButtonList = []
 TimerList = []
 ObjectDict = {}
 
+GREY = [200,200,200]
+WHITE= [255,255,255]
+BLACK = [0, 0, 0]
+RED = [255,0,0]
+
+def FromDict(**ui):
+	if "MainContainer" not in ui:
+		print (str(ui) + "Has no main container: Can't create")
+	else:
+		cont = ui["MainContainer"]["type"](ui["MainContainer"]["contname"], **ui["MainContainer"])
+		for obj in ui:
+			if obj is not "MainContainer":
+				temp_object = ui[obj]["type"](obj, **ui[obj])
+				cont.addObject(temp_object)
+	return cont
+
 #Turn this into sound from pygame
 def playTTS(txt):
 	tts = gTTS(text=txt, lang='en')
 	tts.save("text1" + ".mp3")
 	pygame.mixer.music.load('text1.mp3')
 	pygame.mixer.music.play()
-	
+
 #USE THIS IF YOURE NOT INITIATING IT ANYWHERE ELSE
 def PyInit(w = 800,h = 800, title = "Screen" ,FULLSCREENMODE = False):
 	global font, window, gameLoop, clock
@@ -93,6 +112,7 @@ class UIObject():
 		self.realColor = self.color
 		ObjectList.append(self)
 		ObjectDict[self.name] = self
+		return self
 
 	def setVisable(self, vis):
 		self.visable = vis
@@ -177,12 +197,14 @@ class TextBox(Container):
 	def clear(self):
 		self.lines[:] = []
 		
-
 class Button(UIObject):
 	def __init__(self, name, **kw):
 		super().__init__(name,**kw)
 		self.textColor = kw["textcolor"]
-		self.function = lambda : print()
+		if "function" in kw:
+			self.function = exec(kw["function"])
+		else:
+			self.function = lambda : print()
 		self.text = kw["text"]
 		self.font = pygame.font.SysFont("arial", 18)
 		ButtonList.append(self)
@@ -241,3 +263,4 @@ class DropDown(Button):
 		
 	def draw(self, font = font):
 		super().draw()
+

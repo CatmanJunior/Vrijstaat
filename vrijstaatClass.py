@@ -16,14 +16,14 @@ class Group():
 		self.phase = phase
 
 class Phase():
-	def __init__(self, name, group):
+	def __init__(self, name, group, ui):
 		self.group = group
 		self.name = name
 		self.puzzels = []
 		self.active = False
 		self.done = False
 		self.timer = pg.TimerObject()
-		self.container = pg.Container(self.name + "Container", **CONTAINERS["MainContainer"])
+		self.container = pg.FromDict(**ui)
 		
 	def startTimer(self,timer):
 		self.timer.reset()

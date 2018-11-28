@@ -1,3 +1,6 @@
+import PygameUI as pg
+
+
 soundlist={}
 soundlist["radiokapot"] ='RadioRepareerVerbindingProf.wav'
 soundlist["wezen1"] ='WezensLoop-01.wav'
@@ -47,15 +50,11 @@ puzzles = {
 			"Quiz"			:	["Quiz"]}
 
 
-#Phases
-phaseList = []
-phases = {	"GETIN": {"puzzles" : [], "Name": "Get in"},
-			"INTRO": {"puzzles" : [], "Name": "Intro"},
-			"A": {"puzzles":["Holletje"], "Name": "Tuin"},
-			"B": {"puzzles":["Quiz","Medicein","Crusher"], "Name": "Lab"}}
+
 
 BUTTONS = {
 	"FakeESPButton" : {
+		"type"			:	pg.Button,
 		"location"		:	(320, 5),
 		"size"			:	(100,50),
 		"color"			:	WHITE,
@@ -66,6 +65,7 @@ BUTTONS = {
 		},
 
 	"StartGameButton" : {
+		"type"			:	pg.Button,
 		"location"		:	(320, 5),
 		"size"			:	(100,50),
 		"color"			:	WHITE,
@@ -76,6 +76,7 @@ BUTTONS = {
 		},
 
 	"NextPhaseButton" : {
+		"type"			:	pg.Button,
 		"location"		:	(320, 5),
 		"size"			:	(100,50),
 		"color"			:	WHITE,
@@ -86,6 +87,7 @@ BUTTONS = {
 		},
 
 	"MainWindowButton" : {
+		"type"			:	pg.Button,
 		"location"		:	(320, 5),
 		"size"			:	(100,50),
 		"color"			:	WHITE,
@@ -96,6 +98,7 @@ BUTTONS = {
 		},
 
 	"ResetButton" : {
+		"type"			:	pg.Button,
 		"location"		:	(320, 5),
 		"size"			:	(100,50),
 		"color"			:	WHITE,
@@ -244,6 +247,124 @@ TEXTOBJECTS = {
 			"fontsize"		:	12,
 			},
 }
+
+LABUI = {
+	"KAST1BUTTON" : {
+		"type"			:	pg.Button,
+		"location"		:	(10, 5),
+		"size"			:	(50,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Kast 1",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		"function"		:	"SendMqtt('MED','1')"
+		},
+
+	"KAST2BUTTON" : {
+		"type"			:	pg.Button,
+		"location"		:	(10, 70),
+		"size"			:	(50, 50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Kast 2",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		"function"		:	"SendMqtt('MED','2')"
+		},
+
+	"KAST3BUTTON" : {
+		"type"			:	pg.Button,
+		"location"		:	(10, 130),
+		"size"			:	(50,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Kast 3",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		"function"		:	"SendMqtt('MED','3')"
+		},
+
+	"KAST4BUTTON" : {
+		"type"			:	pg.Button,
+		"location"		:	(10, 190),
+		"size"			:	(50,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Kast 4",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		"function"		:	"SendMqtt('MED','4')"
+		},
+
+	"KAST5BUTTON" : {
+		"type"			:	pg.Button,
+		"location"		:	(10, 260),
+		"size"			:	(50,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Kast 5",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		"function"		:	"SendMqtt('MED','5')"
+		},
+
+	"KAST6BUTTON" : {
+		"type"			:	pg.Button,
+		"location"		:	(10, 320),
+		"size"			:	(50,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Kast 6",
+		"fontsize"		:	12,
+		"textcolor"		:	BLACK,
+		"function"		:	"SendMqtt('MED','6')"
+		},
+
+	"PhaseMqttTextBox" : {
+		"type"			:	pg.TextBox,
+		"location"		:	(290, 25),
+		"size"			:	(200, 490),
+		"color"			:	BLACK,
+		"visable"		:	False,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"title"			:	"Mqtt Messages",
+		"showtitle"		:	True,
+		"maxlines"		:	16,
+		"textcolor"		:	WHITE,
+		},
+
+	"MainContainer" : {
+		"type"			:	pg.Container,
+		"contname"			:	"LabContainer",
+		"location"		:	(5, 100),
+		"size"			:	(550, 400),
+		"color"			:	BLACK,
+		"visable"		:	True,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"objects"		:	[
+							"KAST1BUTTON",
+							"KAST2BUTTON",
+							"KAST3BUTTON",
+							"KAST4BUTTON",
+							"KAST5BUTTON",
+							"KAST6BUTTON",
+							"PhaseMqttTextBox",
+							],
+		"title"			:	"LAB",
+		"showtitle"		:	True,
+		},
+
+}
+
+#Phases
+phaseList = []
+phases = {	"GETIN": {"puzzles" : [], "Name": "Get in", "UI" : LABUI},
+			"INTRO": {"puzzles" : [], "Name": "Intro", "UI" : LABUI},
+			"A": {"puzzles":["Holletje"], "Name": "Tuin", "UI" : LABUI},
+			"B": {"puzzles":["Quiz","Medicein","Crusher"], "Name": "Lab", "UI" : LABUI}}
 
 # playButtonList = []
 # def play(file):

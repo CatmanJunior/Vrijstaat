@@ -68,7 +68,6 @@ ButtonButtons = {"Button 1": lambda: SendMqtt("button", "1")}
 ESPtypes = {"relais": ["relais", RelaisButtons],
 			"button": ["button", ButtonButtons]}
 
-# phaseList = [phases["GETIN"], phases["INTRO"], phases["A"], phases["B"]]
 
 CurrentPhase = 0
 ActiveBox = 0
@@ -84,7 +83,6 @@ def SetNewMainActiveBox(cont):
 	global MainActiveBox
 	if MainActiveBox != 0:
 		MainActiveBox.setVisable(False)
-		print("MainActiveBox set to false")
 	cont.setVisable(True)
 	MainActiveBox = cont
 
@@ -92,7 +90,6 @@ def SetNewActiveBox(cont):
 	global ActiveBox
 	if ActiveBox != 0:
 		ActiveBox.setVisable(False)
-		print("Subactivebox set to false")
 	cont.setVisable(True)
 	ActiveBox= cont
 
@@ -125,7 +122,6 @@ def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
     for topic in TOPICLIST:
         client.subscribe(topic)  # Subscribe to the topic
-
 
 def on_message(client, userdata, msg):
     # Convert the message to string. Original it is a byte printed as b'msg'
@@ -189,7 +185,7 @@ if MQTTON:
 pg.PyInit(1080, 720)
 
 for p in phases:
-	o = Phase(phases[p]["Name"],"A")
+	o = Phase(phases[p]["Name"],"A",phases[p]["UI"])
 	# for puz in phases[p]["puzzles"]:
 	# 	o.addPuzzel(puz)
 	phaseList.append(o)
@@ -230,13 +226,8 @@ SetNewMainActiveBox(pg.ObjectDict["MainContainer"])
 pg.ObjectDict["NextPhaseButton"].function = lambda : NextPhase()
 pg.ObjectDict["MainWindowButton"].function = lambda: SetNewMainActiveBox(pg.ObjectDict["MainContainer"])
 pg.ObjectDict["ResetButton"].function = lambda:SendMqtt("SIGN", "0")
-pg.ObjectDict["StartGameButton"].function=lambda: StartGame()
+# pg.ObjectDict["StartGameButton"].function=lambda: StartGame()
 pg.ObjectDict["FakeESPButton"].function=lambda: SendMqtt("SIGN", "relais1")
-# header.addObject(pg.Button(
-#     "Fake", (215, 5), (100, 50), WHITE, text="Fake", visable=True, function=lambda: SendMqtt("SIGN", "relais1")))
-
-# header.addObject(pg.Button(
-    # "Fake", (215, 5), (100, 50), WHITE, text="Fake", visable=True, function=lambda: SendMqtt("SIGN", "button1")))
 
 # TimerButton = pg.Button(
 #     "TimerButton", (320, 5), (100, 50), WHITE, text="0", visable=True, function=lambda: gameTimer.reset())
@@ -254,7 +245,11 @@ for p in puzzleList:
 def game():
     # TimerButton.text = str(int(gameTimer.currentTime/1000))
     pg.ObjectDict["GameTimerText"].text =  "Timer: " + str(int(gameTimer.currentTime/1000))
+
+
 gameloop = True
+
+
 
 def StartGame():
 	pg.ObjectDict["MainProgressTextBox"].clear()

@@ -43,7 +43,7 @@ void setupESP() {
   pinMode (Rotary1, INPUT);
   pinMode (Rotary2, INPUT);
 
-  t.every(200, checkA, 0);
+  t.every(500, checkA, 0);
   aLastState = digitalRead(Rotary1);
   FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -51,7 +51,7 @@ void setupESP() {
   }
 }
 
-
+int count = 0;
 
 void SideAFunc() {
   //1,1,2,2+1,2+1 = YBRG
@@ -59,7 +59,7 @@ void SideAFunc() {
     case 0:
       if (digitalRead(B1) == LOW) {
         SideA = 1;
-        leds[0] = CRGB::Red;
+
       }
       break;
     case 1:
@@ -70,7 +70,6 @@ void SideAFunc() {
     case 2:
       if (digitalRead(B1) == LOW) {
         SideA = 3;
-        leds[1] = CRGB::Red;
 
       }
       if (digitalRead(B2) == LOW) {
@@ -81,6 +80,7 @@ void SideAFunc() {
       }
       break;
     case 3:
+      leds[0] = CRGB::Red;
       if (digitalRead(B1) == HIGH) {
         SideA = 4;
       }
@@ -88,7 +88,7 @@ void SideAFunc() {
     case 4:
       if (digitalRead(B2) == LOW) {
         SideA = 5;
-        leds[2] = CRGB::Red;
+        leds[1] = CRGB::Red;
       }
       if (digitalRead(B1) == LOW) {
         SideA = 0;
@@ -122,6 +122,8 @@ void SideAFunc() {
     case 7:
       if (digitalRead(B2) == LOW && digitalRead(B1) == LOW) {
         SideA = 8;
+        leds[2] = CRGB::Red;
+
       }
       if (digitalRead(B2) == HIGH) {
         SideA = 0;
@@ -131,6 +133,80 @@ void SideAFunc() {
       }
       break;
     case 8:
+      if (digitalRead(B2) == HIGH && digitalRead(B1) == HIGH) {
+        SideA = 9;
+        count++;
+      }
+      if (digitalRead(B2) == LOW) {
+        if (count != 0) {
+          SideA = 0;
+          for (int i = 0; i < 4; i++) {
+            leds[i] = CRGB::Black;
+          }
+        }
+      }
+
+      break;
+    case 9:
+      if (digitalRead(B2) == HIGH && digitalRead(B1) == LOW) {
+        if (count == 10) {
+          SideA = 10;
+          count = 0;
+          leds[3] = CRGB::Red;
+
+        } else {
+          SideA = 8;
+        }
+
+      }
+      if (digitalRead(B2) == LOW) {
+        count = 0;
+        SideA = 0;
+        for (int i = 0; i < 4; i++) {
+          leds[i] = CRGB::Black;
+        }
+      }
+      break;
+
+    case 10:
+      if (digitalRead(B2) == HIGH && digitalRead(B1) == HIGH) {
+        SideA = 11;
+        leds[count] = CRGB::Blue;
+        count++;
+      }
+      if (digitalRead(B1) == LOW ) {
+        if (count != 0) {
+          count = 0;
+          SideA = 0;
+          for (int i = 0; i < 4; i++) {
+            leds[i] = CRGB::Black;
+          }
+        }
+
+      }
+
+    case 11:
+
+      if (digitalRead(B2) == LOW && digitalRead(B1) == HIGH) {
+        if (count == 4) {
+          SideA = 12;
+          count = 0;
+        } else {
+          SideA = 10;
+        }
+
+      }
+      if (digitalRead(B1) == LOW) {
+        if (count != 0) {
+          count = 0;
+          SideA = 0;
+          for (int i = 0; i < 4; i++) {
+            leds[i] = CRGB::Black;
+          }
+        }
+      }
+      break;
+    case 12:
       leds[0] = CRGB::Yellow;
       leds[1] = CRGB::Blue;
       leds[2] = CRGB::Red;
@@ -364,7 +440,11 @@ void callbackESP(char* topic, byte * payload) {
 }
 
 void checkA(void* context) {
+  Serial.print("Slider A: ");
+  Serial.println(analogRead(A0));
 
+  Serial.print("Slider A: ");
+  Serial.println(analogRead(A2));
 
   Serial.print("SideA: ");
   Serial.println(SideA);
