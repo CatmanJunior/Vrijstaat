@@ -1,80 +1,148 @@
 import PygameUI as pg
 
-
-soundlist={}
-soundlist["radiokapot"] ='RadioRepareerVerbindingProf.wav'
-soundlist["wezen1"] ='WezensLoop-01.wav'
-soundlist["wezen2"] ='WezensLoop-02.wav'
-soundlist["wezen3"] ='WezensLoop-03.wav'
-soundlist["alarm"] ='alarm.wav'
-soundlist["error1"] ='error1.wav'
-# soundlist["error2"] ='error2.wav'
-soundlist["winsound"] ='Win.wav'
-soundlist["succes"] ='succes.wav'
-soundlist["error3"] ='error3.wav'
-soundlist["dooropen"] ='dooropen.wav'
-# soundlist["doorlock1"] ='doorloc'
-soundlist["doorlock2"] ='doorlock2.wav'
-# soundlist["rats"] ='rats.mp3'
-soundlist["soundcreatures"] ='soundscreatures.wav'
-soundlist["intube"] ='soundsintube.wav'
-soundlist["intro1"] ='intro.wav'
-soundlist["intro2"] ='intro2.wav'
-soundlist["inniti"] ='inniti.wav'
-soundlist["lockdown1"] ='lockdown1.wav'
-soundlist["zaklamp"] ='benedenzaklamp.wav'
-soundlist["eindelab"] ='eindlab.wav'
-soundlist["tiplab"] ='tiplab.wav'
-soundlist["verbindinggerepareerd"] ='verbindingfixed.wav'
-soundlist["verbindingverbreekt"] ='verbindingverbreekt.wav'
-soundlist["kijkgerustrond"] ='kijkrond.wav'
-soundlist["koffiehalen"] ='koffiehalen.wav'
-soundlist["lokmachine"] ='lokmachine.wav'
-
-
 GREY = [200,200,200]
 WHITE= [255,255,255]
 BLACK = [0, 0, 0]
 RED = [255,0,0]
 
+TOPICLIST = ["SIGN"]
+
+# Vars to identify ESPs
+ESPlist = []
 
 #Puzzles
 puzzleList = []
 puzzles = {
-			"Holletje"		:	["HolletjesButtons", "HolletjesServo"],
-			"Kooitjes"		:	["Kooitjes"],
-			"Terrarium"		:	["Terrarium"],
-			"PoepScanner"	:	["Poep"],
-			"Crusher"		: 	["Crusher"],
-			"Medicein"		:	["Medicein", "ColorScanner", "Kastje", "Panel"],
-			"Quiz"			:	["Quiz"]}
+		"Holletje"		:	["HolletjesButton", "HolletjesServo"],
+		"Kooitjes"		:	["Kooitjes"],
+		"Terrarium"		:	["Terrarium"],
+		"PoepScanner"	:	["poepscanner"],
+		"Crusher"		: 	["Crusher"],
+		"Medicein"		:	["Medicein", "ColorScanner", "MedKast", "CodePanel"],
+		"Quiz"			:	["Quiz"]}
 
-
-
-
-BUTTONS = {
-	"FakeESPButton" : {
+TEMPLATE = {
+	"SmallButton" : {
 		"type"			:	pg.Button,
-		"location"		:	(320, 5),
-		"size"			:	(100,50),
+		"location"		:	(0,0),
+		"size"			:	(40,40),
 		"color"			:	WHITE,
 		"visable"		:	True,
-		"text"			:	"Fake",
+		"fontsize"		:	10,
+		"textcolor"		:	BLACK,
+		},
+
+	"MiddleButton" : {
+		"type"			:	pg.Button,
+		"location"		:	(0,0),
+		"size"			:	(100,40),
+		"color"			:	WHITE,
+		"visable"		:	True,
 		"fontsize"		:	12,
 		"textcolor"		:	BLACK,
+		},
+
+	"BigText" : {
+		"type"			:	pg.Text,
+		"location"		:	(0,0),
+		"size"			:	(50,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"",
+		"fontsize"		:	18,
+		},
+
+	"MainContainer" : {
+		"type"			:	pg.Container,
+		"contname"		:	"MainContainer",
+		"location"		:	(5, 100),
+		"size"			:	(550, 400),
+		"color"			:	BLACK,
+		"visable"		:	True,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"objects"		:	[],
+		"title"			:	"Main",
+		"showtitle"		:	True,
+		},
+
+	"HeaderButton" : {
+		"type"			:	pg.Button,
+		"location"		:	(0, 0),
+		"size"			:	(100,30),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Header",
+		"fontsize"		:	14,
+		"textcolor"		:	BLACK,
+		},
+
+	}
+
+DROPDOWNITEM = {
+	"location"		:	(0, 50),
+	"size"			:	(100,30),
+	"color"			:	WHITE,
+	"visable"		:	False,
+	"fontsize"		:	14,
+	"textcolor"		:	BLACK,
+	}
+
+HEADER = {
+	"MainContainer"	:	{
+		"type"			:	pg.HeaderContainer,
+		"contname"		:	"HeaderContainer",
+		"location"		:	(0, 0),
+		"size"			:	(1080, 10),
+		"color"			:	BLACK,
+		"visable"		:	True,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"objects"		:	[],
+		"title"			:	"Header",
+		"showtitle"		:	False,
+		},
+
+	"FakeESPButton" : {
+		"fromobject"	:	TEMPLATE["HeaderButton"],
+		"text"			:	"Fake",
 		},
 
 	"StartGameButton" : {
-		"type"			:	pg.Button,
-		"location"		:	(320, 5),
-		"size"			:	(100,50),
-		"color"			:	WHITE,
-		"visable"		:	True,
+		"fromobject"	:	TEMPLATE["HeaderButton"],
 		"text"			:	"Start",
-		"fontsize"		:	12,
-		"textcolor"		:	BLACK,
 		},
 
+	"MainWindowButton" : {
+		"fromobject"	:	TEMPLATE["HeaderButton"],
+		"text"			:	"Main",
+		},
+
+	"ResetButton" : {
+		"fromobject"	:	TEMPLATE["HeaderButton"],
+		"text"			:	"Reset",
+		},
+
+	"ESPDropdownButton" : {
+		"type"			:	pg.DropDownButton,
+		"fromobject"	:	TEMPLATE["HeaderButton"],
+		"text"			:	"ESPS",
+		},
+
+	"PhaseDropdownButton" : {
+		"type"			:	pg.DropDownButton,
+		"fromobject"	:	TEMPLATE["HeaderButton"],
+		"text"			:	"Phases",
+		},
+
+	"PuzzelDropdownButton" : {
+		"type"			:	pg.DropDownButton,
+		"fromobject"	:	TEMPLATE["HeaderButton"],
+		"text"			:	"Puzzles",
+		},
+	}
+
+MAINWINDOW = {
 	"NextPhaseButton" : {
 		"type"			:	pg.Button,
 		"location"		:	(320, 5),
@@ -86,119 +154,16 @@ BUTTONS = {
 		"textcolor"		:	BLACK,
 		},
 
-	"MainWindowButton" : {
-		"type"			:	pg.Button,
-		"location"		:	(320, 5),
-		"size"			:	(100,50),
-		"color"			:	WHITE,
-		"visable"		:	True,
-		"text"			:	"Main",
-		"fontsize"		:	12,
-		"textcolor"		:	BLACK,
+	"PlaySoundBUTTON" : {
+		"fromobject"	:	TEMPLATE["SmallButton"],
+		"location"		:	(200,100),
+		"text"			:	"PlaySound",
+		"function"		:	"SendMqtt('MusicPlayer','text1.mp3')"
 		},
 
-	"ResetButton" : {
-		"type"			:	pg.Button,
-		"location"		:	(320, 5),
-		"size"			:	(100,50),
-		"color"			:	WHITE,
-		"visable"		:	True,
-		"text"			:	"Reset",
-		"fontsize"		:	12,
-		"textcolor"		:	BLACK,
-		},
-
-
-}
-
-DROPDOWNBUTTONS = {
-	"ESPDropdownButton" : {
-		"location"		:	(320, 5),
-		"size"			:	(100,50),
-		"color"			:	WHITE,
-		"visable"		:	True,
-		"text"			:	"ESPS",
-		"fontsize"		:	12,
-		"textcolor"		:	BLACK,
-		},
-
-	"PhaseDropdownButton" : {
-		"location"		:	(320, 5),
-		"size"			:	(100,50),
-		"color"			:	WHITE,
-		"visable"		:	True,
-		"text"			:	"Phases",
-		"fontsize"		:	12,
-		"textcolor"		:	BLACK,
-		},
-
-	"PuzzelDropdownButton" : {
-		"location"		:	(320, 5),
-		"size"			:	(100,50),
-		"color"			:	WHITE,
-		"visable"		:	True,
-		"text"			:	"Puzzles",
-		"fontsize"		:	12,
-		"textcolor"		:	BLACK,
-		},
-}
-
-DROPDOWNITEM = {
-	"location"		:	(0, 50),
-	"size"			:	(80,30),
-	"color"			:	WHITE,
-	"visable"		:	False,
-	"fontsize"		:	12,
-	"textcolor"		:	BLACK,
-	}
-
-HEADER = {
-	"location"		:	(0, 0),
-	"size"			:	(1080, 10),
-	"color"			:	BLACK,
-	"visable"		:	True,
-	"border"		:	2,
-	"bordercolor"	:	WHITE,
-	"objects"		:	["StartGameButton", 
-						"MainWindowButton", 
-						"ResetButton", 
-						"PhaseDropdownButton", 
-						"PuzzelDropdownButton",
-						"ESPDropdownButton",
-						"FakeESPButton"],
-	"title"			:	"Header",
-	"showtitle"		:	False,
-}
-
-CONTAINERS = {
-	"MainContainer" : {
-		"location"		:	(5, 100),
-		"size"			:	(550, 400),
-		"color"			:	BLACK,
-		"visable"		:	True,
-		"border"		:	2,
-		"bordercolor"	:	WHITE,
-		"objects"		:	["MainProgressTextBox", "NextPhaseButton", "GameTimerText"],
-		"title"			:	"Main",
-		"showtitle"		:	True,
-		},
-
-	"SubContainer" : {
-		"location"		:	(570, 80),
-		"size"			:	(500, 530),
-		"color"			:	BLACK,
-		"visable"		:	False,
-		"border"		:	2,
-		"bordercolor"	:	WHITE,
-		"objects"		:	[],
-		"title"			:	"Sub",
-		"showtitle"		:	True,
-		}
-}
-
-TEXTBOXES = {
 	"MainProgressTextBox" : {
-		"location"		:	(10,10),
+		"type"			:	pg.TextBox,
+		"location"		:	(10,20),
 		"size"			:	(150,200),
 		"color"			:	BLACK,
 		"visable"		:	False,
@@ -210,6 +175,48 @@ TEXTBOXES = {
 		"textcolor"		:	WHITE,
 		},
 
+	"GameTimerText" : {
+		"type"			:	pg.Text,
+		"location"		:	(200,10),
+		"size"			:	(50,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Time: ",
+		"fontsize"		:	12,
+		},
+	}
+
+CONTAINERS = {
+	"MainContainer" : {
+		"type"			:	pg.Container,
+		"contname"		:	"MainContainer",
+		"location"		:	(5, 100),
+		"size"			:	(550, 400),
+		"color"			:	BLACK,
+		"visable"		:	True,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"objects"		:	[],
+		"title"			:	"Main",
+		"showtitle"		:	True,
+		},
+
+	"SubContainer" : {
+		"type"			:	pg.Container,
+		"contname"		:	"SubContainer",
+		"location"		:	(570, 80),
+		"size"			:	(500, 530),
+		"color"			:	BLACK,
+		"visable"		:	False,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"objects"		:	[],
+		"title"			:	"Sub",
+		"showtitle"		:	True,
+		}
+	}
+
+TEXTBOXES = {
 	"MainDebugTextBox" : {
 		"location"		:	(5, 515),
 		"size"			:	(500, 200),
@@ -235,94 +242,198 @@ TEXTBOXES = {
 		"maxlines"		:	16,
 		"textcolor"		:	WHITE,
 		}
-}
-
-TEXTOBJECTS = {
-	"GameTimerText" : {
-			"location"		:	(200,10),
-			"size"			:	(50,50),
-			"color"			:	WHITE,
-			"visable"		:	True,
-			"text"			:	"Time: ",
-			"fontsize"		:	12,
-			},
-}
+	}
 
 LABUI = {
+	"ButtonContainer" : {
+		"fromobject"	:	TEMPLATE["MainContainer"],
+		"contname"		:	"LabButtonContainer",
+		"location"		:	(5, 345),
+		"size"			:	(400, 40),
+		"objects"		:  ["KAST1BUTTON",
+							"KAST2BUTTON",
+							"KAST3BUTTON",
+							"KAST4BUTTON",
+							"KAST5BUTTON",
+							"KAST6BUTTON"],
+		"border"		:	0,
+		"bordercolor"	:	WHITE,
+		"title"			:	"Kast",
+		"autofit"		: 	True,
+		"showtitle"		:	True,
+		},	
+
 	"KAST1BUTTON" : {
-		"type"			:	pg.Button,
-		"location"		:	(10, 5),
-		"size"			:	(50,50),
-		"color"			:	WHITE,
-		"visable"		:	True,
+		"fromobject"	:	TEMPLATE["SmallButton"],
 		"text"			:	"Kast 1",
-		"fontsize"		:	12,
-		"textcolor"		:	BLACK,
 		"function"		:	"SendMqtt('MED','1')"
 		},
 
 	"KAST2BUTTON" : {
-		"type"			:	pg.Button,
-		"location"		:	(10, 70),
-		"size"			:	(50, 50),
-		"color"			:	WHITE,
-		"visable"		:	True,
+		"fromobject"	:	TEMPLATE["SmallButton"],
 		"text"			:	"Kast 2",
-		"fontsize"		:	12,
-		"textcolor"		:	BLACK,
 		"function"		:	"SendMqtt('MED','2')"
 		},
 
 	"KAST3BUTTON" : {
-		"type"			:	pg.Button,
-		"location"		:	(10, 130),
-		"size"			:	(50,50),
-		"color"			:	WHITE,
-		"visable"		:	True,
+		"fromobject"	:	TEMPLATE["SmallButton"],
 		"text"			:	"Kast 3",
-		"fontsize"		:	12,
-		"textcolor"		:	BLACK,
 		"function"		:	"SendMqtt('MED','3')"
 		},
 
 	"KAST4BUTTON" : {
-		"type"			:	pg.Button,
-		"location"		:	(10, 190),
-		"size"			:	(50,50),
-		"color"			:	WHITE,
-		"visable"		:	True,
+		"fromobject"	:	TEMPLATE["SmallButton"],
 		"text"			:	"Kast 4",
-		"fontsize"		:	12,
-		"textcolor"		:	BLACK,
 		"function"		:	"SendMqtt('MED','4')"
 		},
 
 	"KAST5BUTTON" : {
-		"type"			:	pg.Button,
-		"location"		:	(10, 260),
-		"size"			:	(50,50),
-		"color"			:	WHITE,
-		"visable"		:	True,
+		"fromobject"	:	TEMPLATE["SmallButton"],
 		"text"			:	"Kast 5",
-		"fontsize"		:	12,
-		"textcolor"		:	BLACK,
 		"function"		:	"SendMqtt('MED','5')"
 		},
 
 	"KAST6BUTTON" : {
-		"type"			:	pg.Button,
-		"location"		:	(10, 320),
-		"size"			:	(50,50),
-		"color"			:	WHITE,
-		"visable"		:	True,
+		"fromobject"	:	TEMPLATE["SmallButton"],
 		"text"			:	"Kast 6",
-		"fontsize"		:	12,
-		"textcolor"		:	BLACK,
 		"function"		:	"SendMqtt('MED','6')"
 		},
 
-	"PhaseMqttTextBox" : {
+	"LabMqttTextBox" : {
 		"type"			:	pg.TextBox,
+		"location"		:	(345, 25),
+		"size"			:	(200, 370),
+		"color"			:	BLACK,
+		"visable"		:	False,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"title"			:	"Mqtt Messages",
+		"showtitle"		:	True,
+		"maxlines"		:	16,
+		"textcolor"		:	WHITE,
+		},
+
+	"MainContainer" : {
+		"type"			:	pg.Container,
+		"contname"		:	"LABCONTAINER",
+		"location"		:	(5, 100),
+		"size"			:	(550, 400),
+		"color"			:	BLACK,
+		"visable"		:	False,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"objects"		:	[],
+		"title"			:	"LAB",
+		"showtitle"		:	True,
+		},
+
+	"LabColorText" : {
+		"fromobject"	:	TEMPLATE["BigText"],
+		"location"		:	(5,30),
+		"text"			:	"ColorScanner: ",
+		},
+
+	"LabCrusherStateText" : {
+		"fromobject"	:	TEMPLATE["BigText"],
+		"location"		:	(5,55),
+		"text"			:	"Crusher: ",
+		},
+
+	"LabReadyText" : {
+		"fromobject"	:	TEMPLATE["BigText"],
+		"location"		:	(5,5),
+		"text"			:	"Ready: READY",
+		},
+	}
+
+TUINUI = {
+	"ButtonContainer" : {
+		"fromobject"	:	TEMPLATE["MainContainer"],
+		"contname"		:	"PoepButtonContainer",
+		"location"		:	(5, 345),
+		"size"			:	(400, 40),
+		"objects"		:  ["POEPHOLBUTTON",
+							"POEPKOOIBUTTON",
+							"POPTERRBUTTON"],
+		"border"		:	0,
+		"title"			:	"Poepjes",
+		"autofit"		: 	True,
+		},
+
+	# "PuzzleContainer" : {
+	# 	"fromobject"	:	TEMPLATE["MainContainer"],
+	# 	"contname"		:	"TuinPuzzleContainer",
+	# 	"location"		:	(5, 345),
+	# 	"size"			:	(400, 40),
+	# 	"objects"		:  ["POEPHOLBUTTON",
+	# 						"POEPKOOIBUTTON",
+	# 						"POPTERRBUTTON"],
+	# 	"border"		:	0,
+	# 	"title"			:	"Poepjes",
+	# 	"autofit"		: 	True,
+	# 	},		
+
+	"POEPHOLBUTTON" : {
+		"fromobject"	:	TEMPLATE["SmallButton"],
+		"text"			:	"Hol Poep",
+		"function"		:	"SendMqtt('poep','1')"
+		},
+
+	"POEPKOOIBUTTON" : {
+		"fromobject"	:	TEMPLATE["SmallButton"],
+		"text"			:	"Kooi Poep",
+		"function"		:	"SendMqtt('poep','2')"
+		},
+
+	"POPTERRBUTTON" : {
+		"fromobject"	:	TEMPLATE["SmallButton"],
+		"text"			:	"Terr Poep",
+		"function"		:	"SendMqtt('poep','3')"
+		},
+
+	"TuinMqttTextBox" : {
+		"type"			:	pg.TextBox,
+		"location"		:	(345, 25),
+		"size"			:	(200, 370),
+		"color"			:	BLACK,
+		"visable"		:	False,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"title"			:	"Mqtt Messages",
+		"showtitle"		:	True,
+		"maxlines"		:	16,
+		"textcolor"		:	WHITE,
+		},
+
+	"MainContainer" : {
+		"type"			:	pg.Container,
+		"contname"		:	"TUINCONTAINER",
+		"location"		:	(5, 100),
+		"size"			:	(550, 400),
+		"color"			:	BLACK,
+		"visable"		:	False,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"objects"		:	[],
+		"title"			:	"Tuin",
+		"showtitle"		:	True,
+		},
+
+	"PoepText" : {
+		"fromobject"	:	TEMPLATE["BigText"],
+		"location"		:	(5,30),
+		"text"			:	"Poepjes: ",
+		},
+
+	"TuinReadyText" : {
+		"fromobject"	:	TEMPLATE["BigText"],
+		"location"		:	(5,5),
+		"text"			:	"Ready: READY",
+		},
+	}
+
+ESPUI = {
+	"ESPMqttTextBox" : {
 		"location"		:	(290, 25),
 		"size"			:	(200, 490),
 		"color"			:	BLACK,
@@ -337,41 +448,225 @@ LABUI = {
 
 	"MainContainer" : {
 		"type"			:	pg.Container,
-		"contname"			:	"LabContainer",
-		"location"		:	(5, 100),
-		"size"			:	(550, 400),
+		"contname"		:	"ESPContainer",
+		"location"		:	(570, 80),
+		"size"			:	(500, 530),
 		"color"			:	BLACK,
-		"visable"		:	True,
+		"visable"		:	False,
 		"border"		:	2,
 		"bordercolor"	:	WHITE,
-		"objects"		:	[
-							"KAST1BUTTON",
-							"KAST2BUTTON",
-							"KAST3BUTTON",
-							"KAST4BUTTON",
-							"KAST5BUTTON",
-							"KAST6BUTTON",
-							"PhaseMqttTextBox",
-							],
-		"title"			:	"LAB",
+		"objects"		:	[],
+		"title"			:	"Sub",
 		"showtitle"		:	True,
 		},
 
-}
+	"SignedText" : {
+		"type"			:	pg.Text,
+		"location"		:	(5,5),
+		"size"			:	(50,50),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Signed: NO",
+		"fontsize"		:	18,
+		},
+
+	"ButtonContainer" : {
+		"fromobject"	:	TEMPLATE["MainContainer"],
+		"contname"		:	"ESPButtonContainer",
+		"location"		:	(5, 345),
+		"size"			:	(200, 40),
+		"objects"		:  	[],
+		"border"		:	0,
+		"title"			:	"OUTPUT",
+		"autofit"		: 	True,
+		"showtitle"		:	True,
+		},
+	}
+
+ESPDict = {
+	"HolletjesButtons"	: {
+		"topic"	:	"HB",
+		"sign"	:	"HolletjesButton",
+		"outputs":	{
+					"HB1" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"1",
+						"function"		:	"SendMqtt('HB','1')"
+						},
+					"HB2" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"2",
+						"function"		:	"SendMqtt('HB','2')"
+						},
+					"HB3" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"3",
+						"function"		:	"SendMqtt('HB','3')"
+						},
+					"HB4" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"4",
+						"function"		:	"SendMqtt('HB','4')"
+						},
+					"HB5" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"5",
+						"function"		:	"SendMqtt('HB','5')"
+						},
+					},
+		},
+	"ColorScanner"		: {
+		"topic"	:	"CS",
+		"sign"	:	"ColorScanner",
+		"outputs":	{
+					"CS1" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"RED",
+						"function"		:	"SendMqtt('CS','1')"
+						},
+					"CS2" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"PINK",
+						"function"		:	"SendMqtt('HB','2')"
+						},
+					"CS3" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"PURPLE",
+						"function"		:	"SendMqtt('HB','3')"
+						},
+					"CS4" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"DARKRED",
+						"function"		:	"SendMqtt('HB','4')"
+						},
+					"CS5" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"Blue",
+						"function"		:	"SendMqtt('CS','5')"
+						},
+					},
+		},	
+	"HolletjesServo"	: {
+		"topic"	:	"HB",
+		"sign"	:	"HolletjesServo",
+		"inputs":	{},
+		},
+	"MediceinKast"		: {
+		"topic"	:	"MED",
+		"sign"	:	"MedKast",
+		"outputs":	{
+					"MED1" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"1",
+						"function"		:	"SendMqtt('MED','1')"
+						},
+					"MED2" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"2",
+						"function"		:	"SendMqtt('MED','2')"
+						},
+					"MED3" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"3",
+						"function"		:	"SendMqtt('MED','3')"
+						},
+					"MED4" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"4",
+						"function"		:	"SendMqtt('MED','4')"
+						},
+					"MED5" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"5",
+						"function"		:	"SendMqtt('MED','5')"
+						},
+					"MED6" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"6",
+						"function"		:	"SendMqtt('MED','6')"
+						},
+					},
+		},
+	"CodePanel"			: {
+		"topic"	:	"Panel",
+		"sign"	:	"CodePanel",
+		"outputs":	{
+					"Panel1" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"1",
+						"function"		:	"SendMqtt('MED','1')"
+						},
+					"Panel2" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"2",
+						"function"		:	"SendMqtt('MED','2')"
+						},
+					"Panel3" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"3",
+						"function"		:	"SendMqtt('MED','3')"
+						},
+					"Panel4" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"4",
+						"function"		:	"SendMqtt('MED','4')"
+						},
+					"Panel5" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"5",
+						"function"		:	"SendMqtt('MED','5')"
+						},
+					"Panel6" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"6",
+						"function"		:	"SendMqtt('MED','6')"
+						},
+					"Panel7" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"4",
+						"function"		:	"SendMqtt('MED','4')"
+						},
+					"Panel8" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"5",
+						"function"		:	"SendMqtt('MED','5')"
+						},
+					"Panel9" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"6",
+						"function"		:	"SendMqtt('MED','6')"
+						},
+					},
+		},
+	"PoepScanner"		: {
+		"topic"	:	"poep",
+		"sign"	:	"poepscanner",
+		"outputs":	{
+					"POEP1" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"Hol",
+						"function"		:	"SendMqtt('poep','1')"
+						},
+					"POEP2" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"Kooi",
+						"function"		:	"SendMqtt('poep','2')"
+						},
+					"POEP3" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"Ter",
+						"function"		:	"SendMqtt('poep','3')"
+						},
+					},
+		},
+	}
 
 #Phases
 phaseList = []
-phases = {	"GETIN": {"puzzles" : [], "Name": "Get in", "UI" : LABUI},
-			"INTRO": {"puzzles" : [], "Name": "Intro", "UI" : LABUI},
-			"A": {"puzzles":["Holletje"], "Name": "Tuin", "UI" : LABUI},
-			"B": {"puzzles":["Quiz","Medicein","Crusher"], "Name": "Lab", "UI" : LABUI}}
-
-# playButtonList = []
-# def play(file):
-#     winsound.PlaySound(
-#         soundlist[file], winsound.SND_FILENAME | winsound.SND_ASYNC)
-# def playlamb(z):
-#     return lambda: play(z)
+phases = {	"LAB": {"puzzles" : ["Quiz","Medicein","Crusher"], "Name": "LAB", "UI" : LABUI},
+			"TUIN": {"puzzles" : ["Holletje"], "Name": "TUIN", "UI" : TUINUI},}
+			# "A": {"puzzles":["Holletje"], "Name": "Tuin", "UI" : LABUI},
+			# "B": {"puzzles":["Quiz","Medicein","Crusher"], "Name": "Lab", "UI" : LABUI}}
 
 
 # groupA = Group("A")

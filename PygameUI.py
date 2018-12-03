@@ -1,32 +1,56 @@
 import pygame
-
 from gtts import gTTS
-
-
+from MqttClass import SendMqtt
 
 window = ""
 font = ""
 gameLoop = False
 clock = ""
+
 ObjectList = []
 ButtonList = []
 TimerList = []
 ObjectDict = {}
 
 GREY = [200,200,200]
-WHITE= [255,255,255]
+WHITE = [255,255,255]
 BLACK = [0, 0, 0]
 RED = [255,0,0]
+GREEN = [0,255,0]
 
-def FromDict(**ui):
-	if "MainContainer" not in ui:
+def FromDict(ui, main = None):
+
+	if "MainContainer" not in ui and main == None:
 		print (str(ui) + "Has no main container: Can't create")
-	else:
+		return None
+	elif "MainContainer" in ui:
+		if "fromobject" in ui["MainContainer"]:
+				ui["MainContainer"]["fromobject"].update(ui["MainContainer"])
+				ui["MainContainer"] = ui["MainContainer"]["fromobject"]
 		cont = ui["MainContainer"]["type"](ui["MainContainer"]["contname"], **ui["MainContainer"])
-		for obj in ui:
-			if obj is not "MainContainer":
-				temp_object = ui[obj]["type"](obj, **ui[obj])
-				cont.addObject(temp_object)
+	elif isinstance(main, Container):
+		cont = main
+
+	elif main != None:
+		cont = main["type"](main["contname"], **main)
+	
+	for obj in ui:
+
+		if obj is not "MainContainer":
+			if "fromobject" in ui[obj]:
+
+				ui[obj]["fromobject"].update(ui[obj])
+				ui[obj] = ui[obj]["fromobject"]
+			
+			temp_object = ui[obj]["type"](obj, **ui[obj])
+			
+			cont.addObject(temp_object)
+
+	for obj in ui:
+		if "objects" in ui[obj]:
+				for element in ui[obj]["objects"]:
+					ObjectDict[obj].addObject(ObjectDict[element])
+
 	return cont
 
 #Turn this into sound from pygame
@@ -34,6 +58,10 @@ def playTTS(txt):
 	tts = gTTS(text=txt, lang='en')
 	tts.save("text1" + ".mp3")
 	pygame.mixer.music.load('text1.mp3')
+	pygame.mixer.music.play()
+
+def PlaySound(file):
+	pygame.mixer.music.load(file)
 	pygame.mixer.music.play()
 
 #USE THIS IF YOURE NOT INITIATING IT ANYWHERE ELSE
@@ -58,7 +86,6 @@ def GameLoop():
 		# if event.type==SONG_END:
 		# 	pass
 		if (event.type==pygame.QUIT):
-			
 			gameloop = False
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
@@ -68,7 +95,7 @@ def GameLoop():
 			for but in ButtonList:
 				if but.rect.collidepoint(mouse_pos):
 					if but.visable:
-						print("Button Pressed: " + (but.name))
+						print("Button Pressed: " + (but.name) + " : " +  str(but.function))
 						but.use()
 		if event.type == pygame.MOUSEMOTION:
 			for obj in ButtonList:
@@ -104,9 +131,18 @@ class UIObject():
 	def __init__(self, name, **kwargs):
 		self.window = window
 		self.name = name
-		self.visable = kwargs["visable"]
 		self.rect = pygame.Rect(kwargs["location"][0],kwargs["location"][1],kwargs["size"][0],kwargs["size"][1])
-		self.color = kwargs["color"]
+		
+		if "visable" in kwargs:
+			self.visable = kwargs["visable"]
+		else:
+			self.visable = False
+		
+		if "color" in kwargs:
+			self.color = kwargs["color"]
+		else:
+			self.color = BLACK
+
 		self.highLightColor = GREY
 		self.highlighted = False
 		self.realColor = self.color
@@ -128,15 +164,26 @@ class UIObject():
 class Container(UIObject):
 	def __init__(self, name, **kw):
 		super().__init__(name, **kw)
-	
-		
 		self.font = pygame.font.SysFont("arial", 14)
-		self.showTitle = kw["showtitle"]
+		if "showtitle" in kw:
+			self.showTitle = kw["showtitle"]
+		else:
+			self.showtitle = False
 		self.objectList = []
 		self.title = kw["title"]
 		self.border = kw["border"]
-		self.borderColor = kw["bordercolor"]
+		if "bordercolor" in kw:
+			self.borderColor = kw["bordercolor"]
+		else:
+			self.bordercolor = WHITE
 		self.textColor = WHITE
+		if "autofit" in kw:
+			self.autofit = kw["autofit"]
+			self.lastobject = (5,5)
+		else:
+			self.autofit = False
+
+
 	def draw(self):
 		if self.showTitle:
 			self.window.blit(self.font.render(self.title, True, self.textColor),(self.rect.topleft[0], self.rect.topleft[1] - 20))
@@ -147,8 +194,18 @@ class Container(UIObject):
 		super().draw()
 
 	def addObject(self, obj):
-		obj.rect.x += self.rect.x
-		obj.rect.y += self.rect.y
+		if self.autofit:
+			
+			if self.lastobject[0] + obj.rect.width > self.rect.width:
+				self.lastobject = (5, self.lastobject[1] + obj.rect.height + 5)
+			obj.rect.x = self.lastobject[0] + self.rect.x
+
+			obj.rect.y = self.lastobject[1]	+ self.rect.y
+			self.lastobject = (self.lastobject[0] + 5 +obj.rect.width,self.lastobject[1])
+		else:
+			obj.rect.x += self.rect.x
+			obj.rect.y += self.rect.y
+
 		self.objectList.append(obj)
 		obj.visable = self.visable
 		return obj
@@ -202,20 +259,23 @@ class Button(UIObject):
 		super().__init__(name,**kw)
 		self.textColor = kw["textcolor"]
 		if "function" in kw:
-			self.function = exec(kw["function"])
+			self.function = lambda : exec(kw["function"])
 		else:
 			self.function = lambda : print()
-		self.text = kw["text"]
-		self.font = pygame.font.SysFont("arial", 18)
+		if "text" in kw:	
+			self.text = kw["text"]
+		else:
+			self.text= "Button"
+		self.font = pygame.font.SysFont("arial", kw["fontsize"])
 		ButtonList.append(self)
 		
-
 	def draw(self, font = font):
 		pygame.draw.rect(self.window, self.color, self.rect)
-		self.window.blit(self.font.render(self.text, True, self.textColor),(self.rect.midleft[0] + 10,self.rect.midleft[1]-20))
+		self.window.blit(self.font.render(self.text, True, self.textColor),(self.rect.midleft[0]+5,self.rect.midleft[1]))
 		super().draw()
 
 	def use(self):
+
 		return self.function()
 
 class Text(UIObject):
@@ -236,7 +296,7 @@ class DropDownButton(Button):
 	
 	def addObject(self, obj):
 		obj.rect.x += self.rect.x 
-		obj.rect.y += self.rect.y + len(self.dropdown) * 30
+		obj.rect.y += self.rect.y + len(self.dropdown) * (obj.rect.height + 1) + 1
 		self.dropdown.append(obj)
 		obj.visable = not self.collapsed
 		return obj

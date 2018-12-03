@@ -1,24 +1,27 @@
 import paho.mqtt.client as mqtt
 
-BROKERIP = "192.168.178.40"
-PORT = 1883
-CLIENTNAME = "Raspberrry"
-client = mqtt.Client(CLIENTNAME)
+client = None
+MQTTON = True
 
-def MQTTConnect(oncon, ):
+def MakeClient(clientname):
+    global client
+    client = mqtt.Client(clientname)
+    return client
+
+def MQTTConnect(ip, port, on_con, on_mess):
     print("Connecting...")
     try:
-        client.on_connect = on_connect
-        client.on_message = on_message
-        client.connect(BROKERIP, port=PORT, keepalive=180)
+        client.on_connect = on_con
+        client.on_message = on_mess
+        client.connect(ip, port=port, keepalive=180)
         client.loop_start()
-        print("Connected")
+        print("Connected to Mqtt server")
         return True
     except:
-        print("Cannot connect to the MQQT Server")
+        print("Cannot connect to the Mqtt Server")
         return False
 
-client.publish(topic, msg)
-
-if MQTTON:
-    mqqtConnect()
+def SendMqtt(topic, msg):
+    if MQTTON:
+        # print(msg)
+        client.publish(topic, msg)
