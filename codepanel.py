@@ -16,7 +16,7 @@ client = mqtt.Client(CLIENTNAME)
 topic = "panel"
 kasttopic = "MED"
 
-codelist = "1234# 2345# 5555# 6666# 7777# 8888#".split()
+codelist = "1234# 2345# 3793# 4600# 7777# 8888#".split()
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -45,9 +45,9 @@ def MQTTConnect():
 
 # client.publish(topic, msg)
 
-MQTTConnect()
+#MQTTConnect()
 
-pg.PyInit(W, H)
+pg.PyInit(W, H, FULLSCREENMODE=True)
 BUTTONS = {
 	"BUT" : {
 		"type"			:	pg.Button,
@@ -129,7 +129,7 @@ def CodeCheck(c):
 	if c == "#":
 		if code in str(codelist):
 			print("yasss")
-			client.publish(kasttopic, g)
+			client.publish(kasttopic, str(g + 1) + "A")
 			g += 1
 			codelist.remove(code)
 		code = ""

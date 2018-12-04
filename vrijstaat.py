@@ -6,7 +6,6 @@ from vrijstaatConst import *
 from vrijstaatClass import *
 from MqttClass import MakeClient, MQTTConnect, SendMqtt
 
-
 #TODOLIST
 """
 - Create logging system
@@ -132,7 +131,7 @@ def on_message(client, userdata, msg):
 MQTTConnect(BROKERIP,PORT,on_connect,on_message)
 
 #init pygame from the PygameUI module
-pg.PyInit(1080, 720)
+pg.PyInit(1080, 720, FULLSCREENMODE = True)
 
 gameTimer = pg.TimerObject()
 
@@ -143,7 +142,7 @@ DEBUGBOX = pg.TextBox("MainDebugTextBox", **TEXTBOXES["MainDebugTextBox"])
 #Set button functions
 pg.ObjectDict["NextPhaseButton"].function = lambda : NextPhase()
 pg.ObjectDict["MainWindowButton"].function = lambda: SetNewMainActiveBox(pg.ObjectDict["MainContainer"])
-pg.ObjectDict["ResetButton"].function = lambda:SendMqtt("SIGN", "0")
+pg.ObjectDict["ResetButton"].function = lambda:SendMqtt("SIGN", "1")
 # pg.ObjectDict["StartGameButton"].function=lambda: StartGame()
 pg.ObjectDict["FakeESPButton"].function=lambda: FakeAll()
 

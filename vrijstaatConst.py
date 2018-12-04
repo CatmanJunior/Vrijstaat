@@ -558,32 +558,32 @@ ESPDict = {
 					"MED1" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"1",
-						"function"		:	"SendMqtt('MED','1')"
+						"function"		:	"SendMqtt('MED','a1B')"
 						},
 					"MED2" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"2",
-						"function"		:	"SendMqtt('MED','2')"
+						"function"		:	"SendMqtt('MED','a2B')"
 						},
 					"MED3" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"3",
-						"function"		:	"SendMqtt('MED','3')"
+						"function"		:	"SendMqtt('MED','a3B')"
 						},
 					"MED4" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"4",
-						"function"		:	"SendMqtt('MED','4')"
+						"function"		:	"SendMqtt('MED','a4B')"
 						},
 					"MED5" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"5",
-						"function"		:	"SendMqtt('MED','5')"
+						"function"		:	"SendMqtt('MED','a5B')"
 						},
 					"MED6" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"6",
-						"function"		:	"SendMqtt('MED','6')"
+						"function"		:	"SendMqtt('MED','a6B')"
 						},
 					},
 		},
