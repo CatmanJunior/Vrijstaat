@@ -1,7 +1,7 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoOTA.h>
-//
+
 const char *ssid =  "Vrijstaat";     // change according to your Network - cannot be longer than 32 characters!
 const char *pass =  "vrijstaat"; // change according to your Network
 const char *mqtt_server = "192.168.178.40";
@@ -16,7 +16,7 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 
 void setup() {
-
+  setupESP();
 
   Serial.begin(115200);    // Initialize serial communications
   Serial.println(NAME);
@@ -65,7 +65,6 @@ void setup() {
   ArduinoOTA.begin();
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-  setupESP();
 }
 
 void loop() {
@@ -128,7 +127,7 @@ void callback(char* topic, byte * payload, unsigned int length) {
       client.publish(SIGNTOPIC, NAME);
     }
   }
-  else
+else
   {
     callbackESP(topic, payload);
   }

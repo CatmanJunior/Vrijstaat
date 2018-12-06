@@ -4,18 +4,18 @@ from vrijstaatConst import *
 class Group():
 	def __init__(self, name):
 		self.name = name
-		self.phase = 0
-		self.phases = []
+		self.Room = 0
+		self.Rooms = []
 		self.kidList = []
 
 	def addKid(self, kid):
 		self.kidList.append(kid)
 		kid.group = self
 
-	def setPhase(self, phase):
-		self.phase = phase
+	def setRoom(self, Room):
+		self.Room = Room
 
-class Phase():
+class Room():
 	def __init__(self, name, ui):
 		self.name = name
 		self.puzzels = []
@@ -36,11 +36,10 @@ class Phase():
 	def setDone(self):
 		self.done = True
 
-
 class Puzzel():
 	def __init__(self, name):
 		self.name = name
-		self.container = pg.Container(self.name + "Container", **CONTAINERS["SubContainer"])
+		self.container = pg.Container(self.name + "Container", **TEMPLATE["SubContainer"])
 		self.butContainer = pg.Container(self.name + "PuzButContainer", **ESPUI["ButtonContainer"])
 		self.readyText = pg.Text(self.name + "ReadyText", **ESPUI["SignedText"])
 		self.readyText.text = "Ready: NO"
@@ -48,6 +47,7 @@ class Puzzel():
 		self.container.addObject(self.butContainer)
 		self.esps = []
 		self.ready = False
+		puzzleList.append(self)
 
 	def addESP(self,esp):
 		self.esps.append(esp)
@@ -63,6 +63,7 @@ class Puzzel():
 				return False
 		self.readyText.text = "Ready: YES"
 		pg.ObjectDict[self.name + "Drop"].realColor = pg.GREEN		
+		self.ready = True
 		return True
 
 
@@ -90,6 +91,7 @@ class ESPModule():
 		self.container.addObject(self.signedtext)   
 		self.signed = False
 		TOPICLIST.append(self.topic)
+		ESPlist.append(self)
 
 		if "outputs" in kwargs:
 			pg.FromDict(kwargs["outputs"],self.butContainer)
@@ -97,9 +99,15 @@ class ESPModule():
 	def Sign(self):
 		self.signed = True
 		self.signedtext.text = "Signed: YES"
+		pg.ObjectDict[self.name + "Drop"].realColor = pg.GREEN
 		for puz in puzzleList:
 			if self in puz.esps:
 				pg.ObjectDict[puz.name + self.name + "Button"].realColor = pg.GREEN
-				pg.ObjectDict[self.name + "Drop"].realColor = pg.GREEN
-				
-
+	
+	def UnSign(self):
+		self.signed = False
+		self.signedtext.text = "Signed: NOPE"
+		pg.ObjectDict[self.name + "Drop"].realColor = pg.RED
+		for puz in puzzleList:
+			if self in puz.esps:
+				pg.ObjectDict[puz.name + self.name + "Button"].realColor = pg.RED

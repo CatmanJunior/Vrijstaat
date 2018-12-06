@@ -16,7 +16,7 @@ puzzles = {
 		"Holletje"		:	["HolletjesButton", "HolletjesServo"],
 		"Kooitjes"		:	["Kooitjes"],
 		"Terrarium"		:	["Terrarium"],
-		"PoepScanner"	:	["poepscanner"],
+		"Poepscanner"	:	["PoepScanner"],
 		"Crusher"		: 	["Crusher"],
 		"Medicein"		:	["Medicein", "ColorScanner", "MedKast", "CodePanel"],
 		"Quiz"			:	["Quiz"]}
@@ -24,6 +24,16 @@ puzzles = {
 TEMPLATE = {
 	"SmallButton" : {
 		"type"			:	pg.Button,
+		"location"		:	(0,0),
+		"size"			:	(40,40),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"fontsize"		:	10,
+		"textcolor"		:	BLACK,
+		},
+
+	"SmallToggleButton" : {
+		"type"			:	pg.ToggleButton,
 		"location"		:	(0,0),
 		"size"			:	(40,40),
 		"color"			:	WHITE,
@@ -58,11 +68,25 @@ TEMPLATE = {
 		"location"		:	(5, 100),
 		"size"			:	(550, 400),
 		"color"			:	BLACK,
-		"visable"		:	True,
+		"visable"		:	False,
 		"border"		:	2,
 		"bordercolor"	:	WHITE,
 		"objects"		:	[],
 		"title"			:	"Main",
+		"showtitle"		:	True,
+		},
+
+	"SubContainer" : {
+		"type"			:	pg.Container,
+		"contname"		:	"SubContainer",
+		"location"		:	(570, 80),
+		"size"			:	(500, 530),
+		"color"			:	BLACK,
+		"visable"		:	False,
+		"border"		:	2,
+		"bordercolor"	:	WHITE,
+		"objects"		:	[],
+		"title"			:	"Sub",
 		"showtitle"		:	True,
 		},
 
@@ -77,9 +101,21 @@ TEMPLATE = {
 		"textcolor"		:	BLACK,
 		},
 
+	"HeaderDropdownButton" : {
+		"type"			:	pg.DropDownButton,
+		"location"		:	(0, 0),
+		"size"			:	(100,30),
+		"color"			:	WHITE,
+		"visable"		:	True,
+		"text"			:	"Header",
+		"fontsize"		:	14,
+		"textcolor"		:	BLACK,
+		},
+
 	}
 
 DROPDOWNITEM = {
+	"type"			:	pg.DropDown,
 	"location"		:	(0, 50),
 	"size"			:	(100,30),
 	"color"			:	WHITE,
@@ -125,25 +161,31 @@ HEADER = {
 
 	"ESPDropdownButton" : {
 		"type"			:	pg.DropDownButton,
-		"fromobject"	:	TEMPLATE["HeaderButton"],
+		"fromobject"	:	TEMPLATE["HeaderDropdownButton"],
 		"text"			:	"ESPS",
 		},
 
-	"PhaseDropdownButton" : {
+	"RoomDropdownButton" : {
 		"type"			:	pg.DropDownButton,
-		"fromobject"	:	TEMPLATE["HeaderButton"],
-		"text"			:	"Phases",
+		"fromobject"	:	TEMPLATE["HeaderDropdownButton"],
+		"text"			:	"Rooms",
 		},
 
 	"PuzzelDropdownButton" : {
 		"type"			:	pg.DropDownButton,
-		"fromobject"	:	TEMPLATE["HeaderButton"],
+		"fromobject"	:	TEMPLATE["HeaderDropdownButton"],
 		"text"			:	"Puzzles",
 		},
 	}
 
 MAINWINDOW = {
-	"NextPhaseButton" : {
+
+	"MainContainer" : {
+		"fromobject"	:	TEMPLATE["MainContainer"],
+		"contname"		:	"MainContainer",
+		},
+
+	"NextRoomButton" : {
 		"type"			:	pg.Button,
 		"location"		:	(320, 5),
 		"size"			:	(100,50),
@@ -153,6 +195,7 @@ MAINWINDOW = {
 		"fontsize"		:	12,
 		"textcolor"		:	BLACK,
 		},
+
 
 	"PlaySoundBUTTON" : {
 		"fromobject"	:	TEMPLATE["SmallButton"],
@@ -314,17 +357,8 @@ LABUI = {
 		},
 
 	"MainContainer" : {
-		"type"			:	pg.Container,
+		"fromobject"	:	TEMPLATE["MainContainer"],
 		"contname"		:	"LABCONTAINER",
-		"location"		:	(5, 100),
-		"size"			:	(550, 400),
-		"color"			:	BLACK,
-		"visable"		:	False,
-		"border"		:	2,
-		"bordercolor"	:	WHITE,
-		"objects"		:	[],
-		"title"			:	"LAB",
-		"showtitle"		:	True,
 		},
 
 	"LabColorText" : {
@@ -405,18 +439,11 @@ TUINUI = {
 		"textcolor"		:	WHITE,
 		},
 
+
 	"MainContainer" : {
-		"type"			:	pg.Container,
+		"fromobject"	:	TEMPLATE["MainContainer"],
 		"contname"		:	"TUINCONTAINER",
-		"location"		:	(5, 100),
-		"size"			:	(550, 400),
-		"color"			:	BLACK,
-		"visable"		:	False,
-		"border"		:	2,
-		"bordercolor"	:	WHITE,
-		"objects"		:	[],
-		"title"			:	"Tuin",
-		"showtitle"		:	True,
+		# "title"			:	"Tuin",
 		},
 
 	"PoepText" : {
@@ -447,17 +474,8 @@ ESPUI = {
 		},
 
 	"MainContainer" : {
-		"type"			:	pg.Container,
+		"fromobject"	:	TEMPLATE["SubContainer"],
 		"contname"		:	"ESPContainer",
-		"location"		:	(570, 80),
-		"size"			:	(500, 530),
-		"color"			:	BLACK,
-		"visable"		:	False,
-		"border"		:	2,
-		"bordercolor"	:	WHITE,
-		"objects"		:	[],
-		"title"			:	"Sub",
-		"showtitle"		:	True,
 		},
 
 	"SignedText" : {
@@ -488,30 +506,14 @@ ESPDict = {
 		"topic"	:	"HB",
 		"sign"	:	"HolletjesButton",
 		"outputs":	{
-					"HB1" : {
-						"fromobject"	:	TEMPLATE["SmallButton"],
-						"text"			:	"1",
-						"function"		:	"SendMqtt('HB','1')"
-						},
-					"HB2" : {
-						"fromobject"	:	TEMPLATE["SmallButton"],
-						"text"			:	"2",
-						"function"		:	"SendMqtt('HB','2')"
-						},
-					"HB3" : {
-						"fromobject"	:	TEMPLATE["SmallButton"],
-						"text"			:	"3",
-						"function"		:	"SendMqtt('HB','3')"
-						},
-					"HB4" : {
-						"fromobject"	:	TEMPLATE["SmallButton"],
-						"text"			:	"4",
-						"function"		:	"SendMqtt('HB','4')"
-						},
-					"HB5" : {
-						"fromobject"	:	TEMPLATE["SmallButton"],
-						"text"			:	"5",
-						"function"		:	"SendMqtt('HB','5')"
+					"ButtonArray" : {
+						"type"			:	pg.ButtonArray,
+						"location"		:	(320, 300),
+						"size"			:	(150,200),
+						"contname"		:	"Buttonarray",
+						"varlist"		:	range(1,6),
+						"functionlist"	:	["SendMqtt('HB','","')"],
+						"buttontemplate":	TEMPLATE["SmallButton"],
 						},
 					},
 		},
@@ -527,17 +529,17 @@ ESPDict = {
 					"CS2" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"PINK",
-						"function"		:	"SendMqtt('HB','2')"
+						"function"		:	"SendMqtt('CS','2')"
 						},
 					"CS3" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"PURPLE",
-						"function"		:	"SendMqtt('HB','3')"
+						"function"		:	"SendMqtt('CS','3')"
 						},
 					"CS4" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"DARKRED",
-						"function"		:	"SendMqtt('HB','4')"
+						"function"		:	"SendMqtt('CS','4')"
 						},
 					"CS5" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
@@ -556,37 +558,44 @@ ESPDict = {
 		"sign"	:	"MedKast",
 		"outputs":	{
 					"MED1" : {
-						"fromobject"	:	TEMPLATE["SmallButton"],
+						"fromobject"	:	TEMPLATE["SmallToggleButton"],
 						"text"			:	"1",
-						"function"		:	"SendMqtt('MED','a1B')"
+						"function"		:	"SendMqtt('MED','a1B')",
+						"offfunction"	:	"SendMqtt('MED','a1A')",
 						},
 					"MED2" : {
-						"fromobject"	:	TEMPLATE["SmallButton"],
+						"fromobject"	:	TEMPLATE["SmallToggleButton"],
 						"text"			:	"2",
-						"function"		:	"SendMqtt('MED','a2B')"
+						"function"		:	"SendMqtt('MED','a2B')",
+						"offfunction"	:	"SendMqtt('MED','a2A')",
 						},
 					"MED3" : {
-						"fromobject"	:	TEMPLATE["SmallButton"],
+						"fromobject"	:	TEMPLATE["SmallToggleButton"],
 						"text"			:	"3",
-						"function"		:	"SendMqtt('MED','a3B')"
+						"function"		:	"SendMqtt('MED','a3B')",
+						"offfunction"	:	"SendMqtt('MED','a3A')",
 						},
 					"MED4" : {
-						"fromobject"	:	TEMPLATE["SmallButton"],
+						"fromobject"	:	TEMPLATE["SmallToggleButton"],
 						"text"			:	"4",
-						"function"		:	"SendMqtt('MED','a4B')"
+						"function"		:	"SendMqtt('MED','a3B')",
+						"offfunction"	:	"SendMqtt('MED','a3A')",
 						},
 					"MED5" : {
-						"fromobject"	:	TEMPLATE["SmallButton"],
+						"fromobject"	:	TEMPLATE["SmallToggleButton"],
 						"text"			:	"5",
-						"function"		:	"SendMqtt('MED','a5B')"
+						"function"		:	"SendMqtt('MED','a4B')",
+						"offfunction"	:	"SendMqtt('MED','a4A')",
 						},
 					"MED6" : {
-						"fromobject"	:	TEMPLATE["SmallButton"],
+						"fromobject"	:	TEMPLATE["SmallToggleButton"],
 						"text"			:	"6",
-						"function"		:	"SendMqtt('MED','a6B')"
+						"function"		:	"SendMqtt('MED','a5B')",
+						"offfunction"	:	"SendMqtt('MED','a5A')",
 						},
 					},
 		},
+
 	"CodePanel"			: {
 		"topic"	:	"Panel",
 		"sign"	:	"CodePanel",
@@ -640,7 +649,7 @@ ESPDict = {
 		},
 	"PoepScanner"		: {
 		"topic"	:	"poep",
-		"sign"	:	"poepscanner",
+		"sign"	:	"PoepScanner",
 		"outputs":	{
 					"POEP1" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
@@ -661,19 +670,27 @@ ESPDict = {
 		},
 	}
 
-#Phases
-phaseList = []
-phases = {	"LAB": {"puzzles" : ["Quiz","Medicein","Crusher"], "Name": "LAB", "UI" : LABUI},
-			"TUIN": {"puzzles" : ["Holletje"], "Name": "TUIN", "UI" : TUINUI},}
-			# "A": {"puzzles":["Holletje"], "Name": "Tuin", "UI" : LABUI},
+#Rooms
+RoomList = []
+Rooms = {
+	"LAB": 
+		{"puzzles" : ["Quiz","Medicein","Crusher"],
+		 "Name": "LAB", 
+		 "UI" : LABUI},
+	"TUIN": 
+		{"puzzles" : ["Holletje"],
+		 "Name": "TUIN",
+		 "UI" : TUINUI},
+		}
+	# "A": {"puzzles":["Holletje"], "Name": "Tuin", "UI" : LABUI},
 			# "B": {"puzzles":["Quiz","Medicein","Crusher"], "Name": "Lab", "UI" : LABUI}}
 
 
 # groupA = Group("A")
 # groupB = Group("B")
 
-# pTuinA = Phase("Tuin", groupA)
-# pTuinB = Phase("Tuin", groupB)
+# pTuinA = Room("Tuin", groupA)
+# pTuinB = Room("Tuin", groupB)
 
 # kid1 = Kid(1)
 # kid1.setGroup(groupA)

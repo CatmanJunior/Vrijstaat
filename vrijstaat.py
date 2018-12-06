@@ -19,11 +19,11 @@ from MqttClass import MakeClient, MQTTConnect, SendMqtt
 	- Schools/weekend
 - The playtrough needs to be automated
     - Just give a start signal, and at some points a que where there isnt a device that controls the que
-    - Gives signals when a certain phase is behind scedule. 
+    - Gives signals when a certain Room is behind scedule. 
     - Give hints based on time and puzzles
 - Text to speech for debugging
 	- Create file then play it and remove it when it's done
-- Soundplayer based on phase
+- Soundplayer based on Room
 - Create a check button, which checks if everything is ready
     - ESPS connected
     - Every setting reset
@@ -41,7 +41,7 @@ PORT = 1883
 CLIENTNAME = "Raspberrry"
 client = MakeClient(CLIENTNAME)
 
-CurrentPhase = 0
+CurrentRoom = 0
 ActiveBox = 0
 MainActiveBox = 0
 
@@ -49,10 +49,10 @@ def FakeAll():
 	for e in ESPDict:
 		SendMqtt("SIGN",ESPDict[e]["sign"])
 
-def NextPhase():
-	global CurrentPhase
-	CurrentPhase+=1
-	if CurrentPhase == 1:
+def NextRoom():
+	global CurrentRoom
+	CurrentRoom+=1
+	if CurrentRoom == 1:
 		Intro()
 
 def SetNewMainActiveBox(cont):
@@ -76,19 +76,17 @@ def JSONdump(data):
 def convertLambda(lamb, arg):
 	return lambda : lamb(arg)
 
-# Send signal to reset all ESPs, make them send the sign in signal again.
+# Send signal to reset all ESPs, make them send the sign message again
 # Set hardreset to True to also make them restart
 def resetESPS(hardreset=False):
-    # NOT TESTED YET
-    pg.ObjectDict["MainDebugTextBox"].addLine("Resetting")
+    for e in ESPlist:
+        e.UnSign()
+    DEBUGBOX.addLine("Resetting")
     if hardreset:
         SendMqtt("SIGN", "1")
     else:
         SendMqtt("SIGN", "0")
-    # Clear ESPlist
-    # TODO: Create function within ESPmodule class to set a var for SIGNED
-    ESPlist[:] = []
-
+    
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
@@ -100,7 +98,6 @@ def on_message(client, userdata, msg):
     msg.payload = str(msg.payload)[2:-1]
     print("New Message -> Topic: " + msg.topic +
           " Payload: " + str(msg.payload))
-    # print the line to the inprogram terminal
     DEBUGBOX.addLine("New Message -> Topic: " + msg.topic +
                    " Payload: " + str(msg.payload))
     # Check if the topic matches any topic of the ESPs
@@ -108,76 +105,71 @@ def on_message(client, userdata, msg):
         if esp.topic == msg.topic:
             esp.textbox.addLine(datetime.datetime.now().strftime(
                 "%H:%M:%S") + ": " + msg.payload)
-            DEBUGBOX.addLine("message add to: " + esp.name)
-
+    
     if msg.topic == "SIGN":
         if msg.payload == "0" or msg.payload == "1":
         	pass
-            #creates a loop so do this different, meant to also be called from a different ESP
-            #resetESPS(hardreset=msg.payload)
+        elif msg.payload == "2":
+            resetESPS()
         else:
-            #if the send message in SIGN is in the ESPtype-dict, which keys contain the names.
             for esp in ESPlist:
                 if msg.payload == esp.name:
                     DEBUGBOX.addLine("ESP found: " + esp.name)
                     esp.Sign()
-                    for p in puzzleList:
-                        p.checkReady()
                     break
             else:
                 DEBUGBOX.addLine("ESP unknown")
-
+        for p in puzzleList:
+            p.checkReady()
+                    
 #Connect to the broker
 MQTTConnect(BROKERIP,PORT,on_connect,on_message)
 
 #init pygame from the PygameUI module
-pg.PyInit(1080, 720, FULLSCREENMODE = True)
+pg.PyInit(1080, 720, FULLSCREENMODE = False)
 
 gameTimer = pg.TimerObject()
 
 pg.FromDict(HEADER)
-pg.FromDict(MAINWINDOW, CONTAINERS["MainContainer"])
+pg.FromDict(MAINWINDOW)
 DEBUGBOX = pg.TextBox("MainDebugTextBox", **TEXTBOXES["MainDebugTextBox"])
 
 #Set button functions
-pg.ObjectDict["NextPhaseButton"].function = lambda : NextPhase()
+pg.ObjectDict["NextRoomButton"].function = lambda : NextRoom()
 pg.ObjectDict["MainWindowButton"].function = lambda: SetNewMainActiveBox(pg.ObjectDict["MainContainer"])
-pg.ObjectDict["ResetButton"].function = lambda:SendMqtt("SIGN", "1")
+pg.ObjectDict["ResetButton"].function = lambda: resetESPS()
 # pg.ObjectDict["StartGameButton"].function=lambda: StartGame()
 pg.ObjectDict["FakeESPButton"].function=lambda: FakeAll()
 
 for esp in ESPDict:
     new_esp = ESPModule(**ESPDict[esp])
-    ESPlist.append(new_esp)
     client.subscribe(new_esp.topic)
-    #Add a button to the dropdown
     dd = pg.ObjectDict["ESPDropdownButton"].addObject(
     	pg.DropDown(ESPDict[esp]["sign"] + "Drop", esp, **DROPDOWNITEM))
     dd.function = convertLambda(SetNewActiveBox,new_esp.container)
 
 for z in puzzles:
 	puz = Puzzel(z)
-	puzzleList.append(puz)
 	dd = pg.DropDown(puz.name + "Drop", puz.name, **DROPDOWNITEM)
 	pg.ObjectDict["PuzzelDropdownButton"].addObject(dd)
 	dd.function = convertLambda(SetNewActiveBox,puz.container)
 	puz.container.title = puz.name
-	for e in puzzles[z]:
+	for top in puzzles[z]:
 		for es in ESPlist:
-			if es.name == e:
+			if es.name == top:
 				puz.addESP(es)
 				puz.but.function = convertLambda(SetNewActiveBox, es.container)
 
-for p in phases:
-	o = Phase(phases[p]["Name"],phases[p]["UI"])
-	for puz in phases[p]["puzzles"]:
-		for pu in puzzleList:
-			if pu.name == puz:
-				o.addPuzzel(pu)
-	dd = pg.DropDown(p + "Drop", p, **DROPDOWNITEM)
-	pg.ObjectDict["PhaseDropdownButton"].addObject(dd)
-	dd.function = convertLambda(SetNewMainActiveBox, o.container)
-	phaseList.append(o)
+for r in Rooms:
+	room = Room(Rooms[r]["Name"],Rooms[r]["UI"])
+	for room_puzzel in Rooms[r]["puzzles"]:
+		for puzzel in puzzleList:
+			if puzzel.name == room_puzzel:
+				room.addPuzzel(puzzel)
+	dd = pg.DropDown(room.name + "Drop", r, **DROPDOWNITEM)
+	pg.ObjectDict["RoomDropdownButton"].addObject(dd)
+	dd.function = convertLambda(SetNewMainActiveBox, room.container)
+	RoomList.append(room)
 
 SetNewMainActiveBox(pg.ObjectDict["MainContainer"])
 
@@ -190,11 +182,11 @@ def StartGame():
 	DEBUGBOX.clear()
 	gameTimer.reset()
 	DEBUGBOX.addLine("Start time: " + datetime.datetime.now().strftime("%H:%M:%S"))
-	DEBUGBOX.addLine("Current Phase: " + phaseList[CurrentPhase]["Name"])
+	DEBUGBOX.addLine("Current Room: " + RoomList[CurrentRoom]["Name"])
 
 def Intro():
 	DEBUGBOX.lines[-1]= "Intro Start: " + datetime.datetime.now().strftime("%H:%M:%S")
-	DEBUGBOX.addLine("Current Phase: " + phaseList[CurrentPhase]["Name"])
+	DEBUGBOX.addLine("Current Room: " + RoomList[CurrentRoom]["Name"])
 
 while gameloop:
     game()
