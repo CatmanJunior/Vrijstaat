@@ -242,6 +242,20 @@ class Container(UIObject):
 		obj.visable = self.visable
 		return obj
 		
+	def moveObjects(self,oldlocation):
+		for obj in self.objectList:
+			if self.autofit:
+				self.lastobject= (0,0)
+				if self.lastobject[0] + obj.rect.width > self.rect.width:
+					self.lastobject = (5, self.lastobject[1] + obj.rect.height + 5)
+				obj.rect.x = self.lastobject[0] + self.rect.x
+				obj.rect.y = self.lastobject[1]	+ self.rect.y
+				self.lastobject = (self.lastobject[0] + 5 +obj.rect.width,self.lastobject[1])
+			else:
+				obj.rect.x = self.rect.x - oldlocation[0] + obj.rect.x 
+				obj.rect.y = self.rect.y - oldlocation[1] + obj.rect.y
+
+
 	def setVisable(self, vis):
 		self.visable = vis
 		for obj in self.objectList:

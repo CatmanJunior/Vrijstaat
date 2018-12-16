@@ -1,8 +1,8 @@
 #include <FastLED.h>
-#include "Timer.h"
 
-#define T1 4
-#define T2 5
+
+#define T1 19
+#define T2 18
 #define B1 6
 #define B2 7
 #define Rotary1 8
@@ -20,7 +20,7 @@ int counter = 0;
 int aState;
 int aLastState;
 
-Timer t;
+
 
 int SideA = 0;
 int SideB = 0;
@@ -43,7 +43,7 @@ void setupESP() {
   pinMode (Rotary1, INPUT);
   pinMode (Rotary2, INPUT);
 
-  t.every(1000, checkA, 0);
+
   aLastState = digitalRead(Rotary1);
   FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -426,12 +426,12 @@ void SideDFunc() {
       }
       break;
     case 1:
-      if (analogRead(A1) <= 100) {
+      if (analogRead(A4) <= 100) {
         SideD = 2;
       }
       break;
     case 2:
-      if (analogRead(A1) >= 100) {
+      if (analogRead(A4) >= 100) {
         SideB = 3;
         leds[13] = CRGB::Red;
 
@@ -453,7 +453,7 @@ void SideDFunc() {
         SideB = 5;
         leds[14] = CRGB::Red;
       }
-      if (analogRead(A1) <= 100) {
+      if (analogRead(A4) <= 100) {
         SideB = 0;
         for (int i = 12; i < 16; i++) {
           leds[i] = CRGB::Black;
@@ -461,10 +461,10 @@ void SideDFunc() {
       }
       break;
     case 5:
-      if (analogRead(A1) >= 100 && analogRead(A0) >= 100) {
+      if (analogRead(A4) >= 100 && analogRead(A0) >= 100) {
         SideB = 6;
       }
-      if (analogRead(A1) >= 800) {
+      if (analogRead(A4) >= 800) {
         SideB = 0;
         for (int i = 12; i < 16; i++) {
           leds[i] = CRGB::Black;
@@ -472,11 +472,11 @@ void SideDFunc() {
       }
       break;
     case 6:
-      if (analogRead(A1) >= 500 && analogRead(A0) >= 800) {
+      if (analogRead(A4) >= 500 && analogRead(A0) >= 800) {
         SideB = 7;
         leds[15] = CRGB::Red;
       }
-      if (analogRead(A1) <= 100 || analogRead(A0) <= 100) {
+      if (analogRead(A4) <= 100 || analogRead(A0) <= 100) {
         SideB = 0;
         for (int i = 12; i < 16; i++) {
           leds[i] = CRGB::Black;
@@ -484,7 +484,7 @@ void SideDFunc() {
       }
       break;
     case 7:
-      if (analogRead(A1) <= 100 || analogRead(A0) <= 100) {
+      if (analogRead(A4) <= 100 || analogRead(A0) <= 100) {
         SideB = 8;
       }
 
@@ -494,7 +494,7 @@ void SideDFunc() {
       leds[9] = CRGB::Blue;
       leds[10] = CRGB::Red;
       leds[11] = CRGB::Green;
-       if (analogRead(A1) >= 100 || analogRead(A0) >= 100) {
+       if (analogRead(A4) >= 100 || analogRead(A0) >= 100) {
         SideB = 0;
         for (int i = 12; i < 16; i++) {
           leds[i] = CRGB::Black;
@@ -509,30 +509,26 @@ void loopESP() {
   SideBFunc();
   SideCFunc();
   SideDFunc();
-  t.update();
   //  if (digitalRead(T1) == HIGH && digitalRead(T2) == HIGH) {
   //    for (int i = 4; i < 8; i++) {
   //      leds[i] = CRGB::Red;
   //    }
   //
   //  }
-
-
+  checkA();
   FastLED.show();
-
-
 }
 
 void callbackESP(char* topic, byte * payload) {
 
 }
 
-void checkA(void* context) {
+void checkA() {
   Serial.print("Slider A: ");
   Serial.println(analogRead(A0));
 
   Serial.print("Slider B: ");
-  Serial.println(analogRead(A1));
+  Serial.println(analogRead(A4));
 
   Serial.print("Slider D: ");
   Serial.println(SideD);

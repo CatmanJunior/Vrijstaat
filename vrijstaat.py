@@ -38,7 +38,7 @@ from MqttClass import MakeClient, MQTTConnect, SendMqtt
 # MQTT Constants
 BROKERIP = "192.168.178.40"
 PORT = 1883
-CLIENTNAME = "Raspberrry"
+CLIENTNAME = "Raspberrry8"
 client = MakeClient(CLIENTNAME)
 
 CurrentRoom = 0
@@ -114,6 +114,7 @@ def on_message(client, userdata, msg):
         else:
             for esp in ESPlist:
                 if msg.payload == esp.name:
+                    
                     DEBUGBOX.addLine("ESP found: " + esp.name)
                     esp.Sign()
                     break
@@ -126,7 +127,7 @@ def on_message(client, userdata, msg):
 MQTTConnect(BROKERIP,PORT,on_connect,on_message)
 
 #init pygame from the PygameUI module
-pg.PyInit(1080, 720, FULLSCREENMODE = False)
+pg.PyInit(1080, 720, FULLSCREENMODE = True)
 
 gameTimer = pg.TimerObject()
 

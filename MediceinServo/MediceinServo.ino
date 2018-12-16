@@ -1,8 +1,6 @@
 #include <FastLED.h>
 #include <Servo.h>
 
-#include <BlynkSimpleEsp8266.h>
-#define BLYNK_PRINT Serial
 
 //  Led's
 #define LED_DATA1 5  // D1

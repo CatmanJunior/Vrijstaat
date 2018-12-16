@@ -1,7 +1,8 @@
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
+
 #include <PubSubClient.h>
 #include <ArduinoOTA.h>
-//
+
 const char *ssid =  "Vrijstaat";     // change according to your Network - cannot be longer than 32 characters!
 const char *pass =  "vrijstaat"; // change according to your Network
 const char *mqtt_server = "192.168.178.40";
@@ -16,7 +17,7 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 
 void setup() {
-
+  setupESP();
 
   Serial.begin(115200);    // Initialize serial communications
   Serial.println(NAME);
@@ -26,13 +27,9 @@ void setup() {
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 
-  int c = 0;
   while ((WiFi.status() != WL_CONNECTED)) {
-    c++;
     delay(500);
     Serial.print(".");
-    if (c == 10){
-    ESP.restart()
   }
   Serial.println(F("WiFi connected"));
   ArduinoOTA.onStart([]() {
@@ -69,7 +66,6 @@ void setup() {
   ArduinoOTA.begin();
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-  setupESP();
 }
 
 void loop() {
@@ -125,14 +121,14 @@ void callback(char* topic, byte * payload, unsigned int length) {
   Serial.print("] ");
   Serial.println((char*)payload);
   if (strcmp(topic, "SIGN") == 0) {
-    if ((char)payload[0] == '1') {
+    if ((char)payload[1] == '1') {
       ESP.restart();
     }
-    if ((char)payload[0] == '0') {
+    if ((char)payload[1] == '0') {
       client.publish(SIGNTOPIC, NAME);
     }
   }
-  else
+else
   {
     callbackESP(topic, payload);
   }
