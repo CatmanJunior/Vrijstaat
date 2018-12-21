@@ -14,9 +14,9 @@ BROKERIP = "192.168.178.40"
 PORT = 1883
 CLIENTNAME = "LabBerry"
 client = mqtt.Client(CLIENTNAME)
-topic = "LAB/PANEL/#"
-kasttopic = "LAB/MEDKAST/#"
-crushertopic = "LAB/CRUSHER/#"
+topic = "LAB/LABBERRY/PANEL/#"
+kasttopic = "LAB/LABBERRY/MEDKAST/#"
+crushertopic = "LAB/LABBERRY/CRUSHER/#"
 c=1
 
 codelist = "1234# 2345# 3793# 4600# 7777# 8888#".split()
@@ -29,18 +29,17 @@ def keymethod(key):
 	if key == 271:
 		client.publish(topic, "Enter")
 		CodeCheck("#")
-
 	
 pg.KeyMethod = keymethod
 keywordlist = "null t1 t2 b1 b2	kr	kl	rSw	rP f1 f2 time repeat".split()
 	#0	t1 	t2 	b1	b2	kr	kl	rSw	rP	f1	f2 time repeat 
 orderlist = [
-	[0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	 0,0],
-	[0,	0,	0,	0,	0,	1,	1,	0,	0,	0,	0,	 0,0],
-	[0,	0,	0,	1,	0,	1,	1,	0,	0,	0,	0,	 0,5],
-	[0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	 0,0],
-	[0,	1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	 5,0],
-	[0,	0,	1,	0,	0,	0,	0,	0,	0,	0,	0,	 0,0],
+	[2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	 0,0],
+	[0,	2,	2,	0,	0,	1,	1,	0,	2,	2,	2,	 0,0],
+	[0,	2,	2,	1,	0,	1,	1,	0,	2,	2,	2,	 0,5],
+	[0,	2,	2,	2,	2,	2,	2,	0,	2,	2,	2,	 0,0],
+	[0,	1,	0,	0,	0,	0,	0,	0,	0,	2,	2,	 5,0],
+	[0,	0,	1,	0,	0,	0,	0,	0,	0,	2,	2,	 0,0],
 	]
 
 inputTimer = pg.TimerObject()
@@ -50,21 +49,25 @@ inputstate = [0]*13
 #Skip first command
 state = 1
 counter = 0
+
 def checkInput(inp, msg):
 	global state
 	global counter
-	print(inp + msg)
+	print(inp + " : "  + msg)
 	if inp in keywordlist:
 		inp_num = keywordlist.index(inp)
 		inputstate[inp_num] = int(msg)
 		print(keywordlist[inp_num] + "set to: " + msg)
 	else:
 		return True
+	
 	print (inputstate)
 	print (orderlist[state])
 	print("counter: " + str(counter))
+	
 	for inp_num in range(len(keywordlist)-2):
-		
+		if orderlist[state][inp_num] == 2:
+			continue
 		if inputstate[inp_num] == orderlist[state][inp_num]:
 			print("Right key: " + keywordlist[inp_num])
 		elif inputstate[inp_num] == orderlist[state-1][inp_num]:
@@ -80,17 +83,17 @@ def checkInput(inp, msg):
 			state+=1
 			inputTimer.reset()
 		elif orderlist[state][-1]-1 == counter:
-			print(counter)
 			state+=1
 			inputTimer.reset()
-			counter = 0	
+			counter = 0
 		else: 
 			counter+= 1
-			print(counter)
 			state -= 1
+			return True
 
 	print("move to next state: " + str(state))
-	
+	client.publish(crushertopic, "state" + state)
+
 	if state == 8:
 		state = 1
 	return True
@@ -98,9 +101,10 @@ def checkInput(inp, msg):
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
-    client.subscribe(topic) # Subscribe to the topic
-    client.subscribe(kasttopic) # Subscribe to the topic
-    client.subscribe(crushertopic) 
+    client.subscribe(topic)
+    client.subscribe(kasttopic)
+    client.subscribe(crushertopic)
+    client.publish("SIGN", "LabBerry")
 
 def on_message(client, userdata, msg):
     # Convert the message to string. Original it is a byte printed as b'msg'
@@ -111,6 +115,9 @@ def on_message(client, userdata, msg):
     	txt.text = "Kleur Code: " + msg.payload
     if msg.topic.startswith(crushertopic[:-1]):
     	checkInput( msg.topic[len(crushertopic[:-1]):],msg.payload)
+    if msg.topic == "SIGN":
+    	if msg.payload == "0":
+    		client.publish("SIGN", "LabBerry")
 
 def on_log(client, userdata, level, buff):
 	# print(client)
@@ -218,13 +225,12 @@ def CodeCheck(c):
 		return
 	if c == "#":
 		if code in str(codelist):
-			print("yasss")
 			client.publish(kasttopic, "a" + str(kastlist[g]) + "B")
 			g += 1
 			codelist.remove(code)
 		if code == "1111#":
 			codelist = "1234# 2345# 3793# 4600# 7777# 8888#".split()
-			client.publish("SIGN", 1)
+			# client.publish("SIGN", 1)
 			g = 0
 
 		code = ""

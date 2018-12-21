@@ -26,13 +26,9 @@ void setup() {
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 
-  int c = 0;
   while ((WiFi.status() != WL_CONNECTED)) {
-    c++;
     delay(500);
     Serial.print(".");
-    if (c == 10){
-    ESP.restart()
   }
   Serial.println(F("WiFi connected"));
   ArduinoOTA.onStart([]() {

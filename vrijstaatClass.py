@@ -90,11 +90,16 @@ class ESPModule():
 		self.signedtext = pg.Text(self.name + "ESPsignedText", **ESPUI["SignedText"])
 		self.container.addObject(self.signedtext)   
 		self.signed = False
+		self.emptybutton = pg.Button(self.name + "Emptybutton", **ESPUI["EmptyButton"])
+		self.emptybutton.function = lambda : self.Empty()
+		self.container.addObject(self.emptybutton)
 		TOPICLIST.append(self.topic)
 		ESPlist.append(self)
 
 		if "outputs" in kwargs:
 			pg.FromDict(kwargs["outputs"],self.butContainer)
+	def Empty(self):
+		self.textbox.lines = []
 
 	def Sign(self):
 		self.signed = True

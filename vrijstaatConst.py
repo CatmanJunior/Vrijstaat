@@ -5,7 +5,7 @@ WHITE= [255,255,255]
 BLACK = [0, 0, 0]
 RED = [255,0,0]
 
-TOPICLIST = ["SIGN"]
+TOPICLIST = ["SIGN", "LAB/#", "TUIN/#", "EXPO/#"]
 
 # Vars to identify ESPs
 ESPlist = []
@@ -499,11 +499,17 @@ ESPUI = {
 		"autofit"		: 	True,
 		"showtitle"		:	True,
 		},
+
+	"EmptyButton" : {
+		"fromobject"	:	TEMPLATE["SmallButton"],
+		"location"		:	(100,50),
+		"text"			:	"empty",
+		},
 	}
 
 ESPDict = {
 	"HolletjesButtons"	: {
-		"topic"	:	"HB",
+		"topic"	:	"TUIN/HB",
 		"sign"	:	"HolletjesButton",
 		"outputs":	{
 					"ButtonArray" : {
@@ -518,33 +524,64 @@ ESPDict = {
 					},
 		},
 	"ColorScanner"		: {
-		"topic"	:	"CS",
+		"topic"	:	"LAB/CS",
 		"sign"	:	"ColorScanner",
 		"outputs":	{
 					"CS1" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"RED",
-						"function"		:	"SendMqtt('CS','1')"
+						"function"		:	"SendMqtt('LAB/CS','1')"
 						},
 					"CS2" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"PINK",
-						"function"		:	"SendMqtt('CS','2')"
+						"function"		:	"SendMqtt('LAB/CS','2')"
 						},
 					"CS3" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"PURPLE",
-						"function"		:	"SendMqtt('CS','3')"
+						"function"		:	"SendMqtt('LAB/CS','3')"
 						},
 					"CS4" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"DARKRED",
-						"function"		:	"SendMqtt('CS','4')"
+						"function"		:	"SendMqtt('LAB/CS','4')"
 						},
 					"CS5" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"Blue",
-						"function"		:	"SendMqtt('CS','5')"
+						"function"		:	"SendMqtt('LAB/CS','5')"
+						},
+					},
+		},	
+	"MusicPlayer"		: {
+		"topic"	:	"MusicPlayer",
+		"sign"	:	"MusicPlayer1",
+		"outputs":	{
+					"M1" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"1",
+						"function"		:	"SendMqtt('MusicPlayer','text1.mp3')"
+						},
+					"M2" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"2",
+						"function"		:	"SendMqtt('MusicPlayer','2')"
+						},
+					"M3" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"3",
+						"function"		:	"SendMqtt('MusicPlayer','3')"
+						},
+					"M4" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"4",
+						"function"		:	"SendMqtt('MusicPlayer','4')"
+						},
+					"M5" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"5",
+						"function"		:	"SendMqtt('MusicPlayer','5')"
 						},
 					},
 		},	
@@ -647,6 +684,17 @@ ESPDict = {
 						},
 					},
 		},
+	"LabBerry"			: {
+		"topic"	:	"LAB/LABBERRY/#",
+		"sign"	:	"LabBerry",
+		"outputs":	{
+					"Panel1" : {
+						"fromobject"	:	TEMPLATE["SmallButton"],
+						"text"			:	"Next State",
+						"function"		:	"SendMqtt('MED','1')"
+						},
+					},
+		},
 	"PoepScanner"		: {
 		"topic"	:	"poep",
 		"sign"	:	"PoepScanner",
@@ -666,6 +714,53 @@ ESPDict = {
 						"text"			:	"Ter",
 						"function"		:	"SendMqtt('poep','3')"
 						},
+					},
+		},
+	"crusher"		: {
+		"topic"	:	"LAB/CRUSHER",
+		"sign"	:	"Crusher",
+		"outputs":	{
+					"B1" : {
+						"fromobject"	:	TEMPLATE["SmallToggleButton"],
+						"type"			:	pg.ToggleButton,
+						"text"			:	"B1",
+						"function"		:	"SendMqtt('LAB/CRUSHER/b1','1')",
+						"offfunction"	:	"SendMqtt('LAB/CRUSHER/b1','0')",
+						},
+					"B2" : {
+						"fromobject"	:	TEMPLATE["SmallToggleButton"],
+						"type"			:	pg.ToggleButton,
+						"text"			:	"B2",
+						"function"		:	"SendMqtt('LAB/CRUSHER/b2','1')",
+						"offfunction"	:	"SendMqtt('LAB/CRUSHER/b2','0')",
+						},
+					"T1" : {
+						"fromobject"	:	TEMPLATE["SmallToggleButton"],
+						"type"			:	pg.ToggleButton,
+						"text"			:	"T1",
+						"function"		:	"SendMqtt('LAB/CRUSHER/t1','1')",
+						"offfunction"	:	"SendMqtt('LAB/CRUSHER/t1','0')",						},
+					"T2" : {
+						"fromobject"	:	TEMPLATE["SmallToggleButton"],
+						"type"			:	pg.ToggleButton,
+						"text"			:	"T2",
+						"function"		:	"SendMqtt('LAB/CRUSHER/t2','1')",
+						"offfunction"	:	"SendMqtt('LAB/CRUSHER/t2','0')",
+						},
+					"kr" : {
+						"fromobject"	:	TEMPLATE["SmallToggleButton"],
+						"type"			:	pg.ToggleButton,
+						"text"			:	"kr",
+						"function"		:	"SendMqtt('LAB/CRUSHER/kr','1')",
+						"offfunction"	:	"SendMqtt('LAB/CRUSHER/kr','0')",
+						},
+					"kl" : {
+						"fromobject"	:	TEMPLATE["SmallToggleButton"],
+						"type"			:	pg.ToggleButton,
+						"text"			:	"kl",
+						"function"		:	"SendMqtt('LAB/CRUSHER/kl','1')",
+						"offfunction"	:	"SendMqtt('LAB/CRUSHER/kl','0')",
+						},	
 					},
 		},
 	}

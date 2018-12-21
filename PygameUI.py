@@ -20,6 +20,10 @@ BLACK = [0, 0, 0]
 RED = [255,0,0]
 GREEN = [0,255,0]
 
+KeyMethod = lambda x : emptymethod() 
+def emptymethod():
+	pass
+
 def addDict(base, adder):
 	adder = copy.deepcopy(adder)
 	adder.update(base)
@@ -93,6 +97,7 @@ def GameLoop():
 		if (event.type==pygame.QUIT):
 			gameloop = False
 		if event.type == pygame.KEYDOWN:
+			KeyMethod(event.key)
 			if event.key == pygame.K_ESCAPE:
 				gameloop = False
 		if event.type == pygame.MOUSEBUTTONDOWN:
@@ -135,6 +140,10 @@ class TimerObject():
 		TimerList.append(self)
 	def reset(self):
 		self.startTime = pygame.time.get_ticks()
+	def __str__(self):
+		return str(self.currentTime)
+
+
 
 BASE = {
 	"name"			:	"",
@@ -242,20 +251,6 @@ class Container(UIObject):
 		obj.visable = self.visable
 		return obj
 		
-	def moveObjects(self,oldlocation):
-		for obj in self.objectList:
-			if self.autofit:
-				self.lastobject= (0,0)
-				if self.lastobject[0] + obj.rect.width > self.rect.width:
-					self.lastobject = (5, self.lastobject[1] + obj.rect.height + 5)
-				obj.rect.x = self.lastobject[0] + self.rect.x
-				obj.rect.y = self.lastobject[1]	+ self.rect.y
-				self.lastobject = (self.lastobject[0] + 5 +obj.rect.width,self.lastobject[1])
-			else:
-				obj.rect.x = self.rect.x - oldlocation[0] + obj.rect.x 
-				obj.rect.y = self.rect.y - oldlocation[1] + obj.rect.y
-
-
 	def setVisable(self, vis):
 		self.visable = vis
 		for obj in self.objectList:

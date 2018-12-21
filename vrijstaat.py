@@ -38,7 +38,7 @@ from MqttClass import MakeClient, MQTTConnect, SendMqtt
 # MQTT Constants
 BROKERIP = "192.168.178.40"
 PORT = 1883
-CLIENTNAME = "Raspberrry8"
+CLIENTNAME = "Raspberrry2"
 client = MakeClient(CLIENTNAME)
 
 CurrentRoom = 0
@@ -90,16 +90,18 @@ def resetESPS(hardreset=False):
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
-    for topic in TOPICLIST:
-        client.subscribe(topic)  # Subscribe to the topic
+    # for topic in TOPICLIST:
+    client.subscribe("#")  # Subscribe to the topic
 
 def on_message(client, userdata, msg):
     # Convert the message to string. Original it is a byte printed as b'msg'
     msg.payload = str(msg.payload)[2:-1]
     print("New Message -> Topic: " + msg.topic +
           " Payload: " + str(msg.payload))
+
     DEBUGBOX.addLine("New Message -> Topic: " + msg.topic +
                    " Payload: " + str(msg.payload))
+    
     # Check if the topic matches any topic of the ESPs
     for esp in ESPlist:
         if esp.topic == msg.topic:
@@ -114,7 +116,6 @@ def on_message(client, userdata, msg):
         else:
             for esp in ESPlist:
                 if msg.payload == esp.name:
-                    
                     DEBUGBOX.addLine("ESP found: " + esp.name)
                     esp.Sign()
                     break
@@ -127,7 +128,7 @@ def on_message(client, userdata, msg):
 MQTTConnect(BROKERIP,PORT,on_connect,on_message)
 
 #init pygame from the PygameUI module
-pg.PyInit(1080, 720, FULLSCREENMODE = True)
+pg.PyInit(1080, 720, FULLSCREENMODE = False)
 
 gameTimer = pg.TimerObject()
 
@@ -173,9 +174,9 @@ for r in Rooms:
 	RoomList.append(room)
 
 SetNewMainActiveBox(pg.ObjectDict["MainContainer"])
-
 def game():
     pg.ObjectDict["GameTimerText"].text =  "Timer: " + str(int(gameTimer.currentTime/1000))
+
 
 gameloop = True
 
