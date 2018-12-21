@@ -63,7 +63,7 @@ def checkInput(inp, msg):
 	print (inputstate)
 	print (orderlist[state])
 	print("counter: " + str(counter))
-	for inp_num in range(len(keywordlist)-2):
+	for inp_num in range(len(keywordlist)-4):
 		
 		if inputstate[inp_num] == orderlist[state][inp_num]:
 			print("Right key: " + keywordlist[inp_num])

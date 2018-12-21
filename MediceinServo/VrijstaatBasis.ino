@@ -15,6 +15,25 @@ char msg[50];
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+void callback(char* topic, byte * payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  Serial.println((char*)payload);
+  if (strcmp(topic, "SIGN") == 0) {
+    if ((char)payload[0] == '1') {
+      ESP.restart();
+    }
+    if ((char)payload[0] == '0') {
+      client.publish(SIGNTOPIC, NAME);
+    }
+  }
+  else
+  {
+    callbackESP(topic, payload);
+  }
+}
+
 void setup() {
 
 
@@ -29,10 +48,11 @@ void setup() {
   int c = 0;
   while ((WiFi.status() != WL_CONNECTED)) {
     c++;
-    delay(500);
+    delay(500); 
     Serial.print(".");
-    if (c == 10){
-    ESP.restart()
+    if (c == 20) {
+      ESP.restart();
+    }
   }
   Serial.println(F("WiFi connected"));
   ArduinoOTA.onStart([]() {
@@ -116,24 +136,5 @@ void reconnect() {
       // Wait 5 seconds before retrying
       delay(5000);
     }
-  }
-}
-
-void callback(char* topic, byte * payload, unsigned int length) {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
-  Serial.println((char*)payload);
-  if (strcmp(topic, "SIGN") == 0) {
-    if ((char)payload[0] == '1') {
-      ESP.restart();
-    }
-    if ((char)payload[0] == '0') {
-      client.publish(SIGNTOPIC, NAME);
-    }
-  }
-  else
-  {
-    callbackESP(topic, payload);
   }
 }

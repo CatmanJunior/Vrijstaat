@@ -128,7 +128,7 @@ MQTTConnect(BROKERIP,PORT,on_connect,on_message)
 
 #init pygame from the PygameUI module
 pg.PyInit(1080, 720, FULLSCREENMODE = True)
-
+    
 gameTimer = pg.TimerObject()
 
 pg.FromDict(HEADER)

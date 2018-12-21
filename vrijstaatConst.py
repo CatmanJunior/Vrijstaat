@@ -5,7 +5,7 @@ WHITE= [255,255,255]
 BLACK = [0, 0, 0]
 RED = [255,0,0]
 
-TOPICLIST = ["SIGN"]
+TOPICLIST = ["SIGN", "#"]
 
 # Vars to identify ESPs
 ESPlist = []
@@ -309,37 +309,37 @@ LABUI = {
 	"KAST1BUTTON" : {
 		"fromobject"	:	TEMPLATE["SmallButton"],
 		"text"			:	"Kast 1",
-		"function"		:	"SendMqtt('MED','1')"
+		"function"		:	"SendMqtt('LAB/MEDKAST','1B')"
 		},
 
 	"KAST2BUTTON" : {
 		"fromobject"	:	TEMPLATE["SmallButton"],
 		"text"			:	"Kast 2",
-		"function"		:	"SendMqtt('MED','2')"
+		"function"		:	"SendMqtt('LAB/MEDKAST','2')"
 		},
 
 	"KAST3BUTTON" : {
 		"fromobject"	:	TEMPLATE["SmallButton"],
 		"text"			:	"Kast 3",
-		"function"		:	"SendMqtt('MED','3')"
+		"function"		:	"SendMqtt('LAB/MEDKAST','3')"
 		},
 
 	"KAST4BUTTON" : {
 		"fromobject"	:	TEMPLATE["SmallButton"],
 		"text"			:	"Kast 4",
-		"function"		:	"SendMqtt('MED','4')"
+		"function"		:	"SendMqtt('LAB/MEDKAST','4')"
 		},
 
 	"KAST5BUTTON" : {
 		"fromobject"	:	TEMPLATE["SmallButton"],
 		"text"			:	"Kast 5",
-		"function"		:	"SendMqtt('MED','5')"
+		"function"		:	"SendMqtt('LAB/MEDKAST','5')"
 		},
 
 	"KAST6BUTTON" : {
 		"fromobject"	:	TEMPLATE["SmallButton"],
 		"text"			:	"Kast 6",
-		"function"		:	"SendMqtt('MED','6')"
+		"function"		:	"SendMqtt('LAB/MEDKAST','6')"
 		},
 
 	"LabMqttTextBox" : {

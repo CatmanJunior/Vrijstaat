@@ -1,7 +1,6 @@
 #include <FastLED.h>
 #include <Servo.h>
 
-
 //  Led's
 #define LED_DATA1 5  // D1
 #define LED_DATA2 0 // D3
@@ -13,7 +12,7 @@
 CRGB leds[NUM_STRIPS][NUM_LEDS];
 
 const char *NAME = "MedKast";
-const char *TOPIC = "MED"; //HB
+const char *TOPIC = "LAB/MEDKAST";
 
 //  Servo's
 Servo servo[6];  // create servo object to control a servo
@@ -36,11 +35,19 @@ bool doorState[6];
 bool masterSwitch = false;
 
 void setupESP() {
+
   FastLED.addLeds<WS2812B, LED_DATA1, GRB>(leds[0], NUM_LEDS);
   FastLED.addLeds<WS2812B, LED_DATA2, GRB>(leds[1], NUM_LEDS);
   FastLED.delay(1000 / FRAMES_PER_SECOND);
   FastLED.setBrightness( brightness );
 
+  for (int i = 0; i < NUM_LEDS; ++i)
+  {
+    leds[0][i] = colorOff;
+    leds[1][i] = colorOff;
+  }
+
+  FastLED.show();
   for (int i = 0; i < 6; i++)
   {
     doorState[i] = false;
@@ -53,13 +60,6 @@ void setupESP() {
     servo[i].write(90);
   }
 
-  for (int i = 0; i < NUM_LEDS; ++i)
-  {
-    leds[0][i] = colorOff;
-    leds[1][i] = colorOff;
-  }
-
-  FastLED.show();
 }
 
 void loopESP() {

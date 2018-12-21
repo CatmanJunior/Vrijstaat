@@ -9,7 +9,7 @@ const int SIGNNUM = 0;
 const char *SIGNTOPIC = "SIGN";
 
 long lastMsg = 0;
-char msg[50];
+
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -71,24 +71,33 @@ void loop() {
   if (!client.connected()) {
     reconnect();
   }
-
   client.loop();
   loopESP();
 }
 
-
 void sendMsg(int ms) {
-  snprintf (msg, 75, "#%ld", ms);
+  char msg[50];
+  snprintf (msg, 75, "%ld", ms);
   Serial.print("Publish message: ");
   Serial.println(msg);
   client.publish(TOPIC, msg);
 }
 
 void Sign(int ms) {
+  char msg[50];
   snprintf (msg, 75, "#%ld", ms);
   Serial.print("Publish message: ");
   Serial.println(msg);
   client.publish(SIGNTOPIC, msg);
+}
+
+
+void sendInput(const char *t, int ms) {
+  char msg[50];
+  snprintf (msg, 75, "%ld", ms);
+  Serial.print("Publish message: ");
+  Serial.println(msg);
+  client.publish(t, msg);
 }
 
 void reconnect() {
@@ -126,7 +135,7 @@ void callback(char* topic, byte * payload, unsigned int length) {
       client.publish(SIGNTOPIC, NAME);
     }
   }
-else
+  else
   {
     callbackESP(topic, payload);
   }
