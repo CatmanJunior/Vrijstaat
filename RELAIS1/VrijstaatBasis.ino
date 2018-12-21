@@ -6,16 +6,15 @@ const char *ssid =  "Vrijstaat";     // change according to your Network - canno
 const char *pass =  "vrijstaat"; // change according to your Network
 const char *mqtt_server = "192.168.178.40";
 
-const char *SIGNTOP = "SIGN";
-long lastMsg = 0;
-char msg[50];
+const int SIGNNUM = 0;
+const char *SIGNTOPIC = "SIGN";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
 void setup() {
   setupESP();
-
+  
   Serial.begin(115200);    // Initialize serial communications
   Serial.println(NAME);
 
@@ -75,6 +74,7 @@ void loop() {
   loopESP();
 }
 
+
 void sendMsg(int ms) {
   snprintf (msg, 75, "#%ld", ms);
   Serial.print("Publish message: ");
@@ -82,15 +82,11 @@ void sendMsg(int ms) {
   client.publish(TOPIC, msg);
 }
 
-void sendStr(const char *ms) {
+void Sign(int ms) {
+  snprintf (msg, 75, "#%ld", ms);
   Serial.print("Publish message: ");
-  Serial.println(ms);
-  client.publish(TOPIC, ms);
-}
-
-void Sign(const char *ms) {
-  Serial.println(ms);
-  client.publish(SIGNTOPIC, ms);
+  Serial.println(msg);
+  client.publish(SIGNTOPIC, msg);
 }
 
 void reconnect() {
@@ -101,11 +97,9 @@ void reconnect() {
     if (client.connect(NAME)) {
       Serial.println("connected");
       // Once connected, publish an announcement...
-      Sign("0");
+      client.publish(SIGNTOPIC, NAME);
       // ... and resubscribe
       client.subscribe(TOPIC);
-      client.subscribe(SIGNTOPIC);
-      client.subscribe(SIGNTOP);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -117,19 +111,11 @@ void reconnect() {
 }
 
 void callback(char* topic, byte * payload, unsigned int length) {
+  Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
   Serial.println((char*)payload);
-  if (strcmp(topic, "SIGN") == 0) {
-    if ((char)payload[0] == '1') {
-      ESP.restart();
-    }
-    if ((char)payload[0] == '0') {
-      Sign("0");  
-    }
-  }
-  else
-  {
-    callbackESP(topic, payload);
-  }
+
+  
+  callbackESP(topic, payload);
 }

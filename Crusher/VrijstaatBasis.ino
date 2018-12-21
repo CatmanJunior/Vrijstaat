@@ -82,6 +82,7 @@ void sendMsg(int ms) {
   Serial.print("Publish message: ");
   Serial.println(msg);
   client.publish(TOPIC, msg);
+
 }
 
 void Sign(int ms) {

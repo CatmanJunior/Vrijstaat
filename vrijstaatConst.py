@@ -511,7 +511,7 @@ ESPDict = {
 						"location"		:	(320, 300),
 						"size"			:	(150,200),
 						"contname"		:	"Buttonarray",
-						"varlist"		:	range(1,6),
+						"varlist"		:	"a1 a2 a3 a4 a5 a6",
 						"functionlist"	:	["SendMqtt('HB','","')"],
 						"buttontemplate":	TEMPLATE["SmallButton"],
 						},
