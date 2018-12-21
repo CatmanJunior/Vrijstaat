@@ -1,6 +1,7 @@
-#include <WiFi.h>
+#include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoOTA.h>
+
 const char *ssid =  "Vrijstaat";     // change according to your Network - cannot be longer than 32 characters!
 const char *pass =  "vrijstaat"; // change according to your Network
 const char *mqtt_server = "192.168.178.40";
@@ -8,15 +9,12 @@ const char *mqtt_server = "192.168.178.40";
 const int SIGNNUM = 0;
 const char *SIGNTOPIC = "SIGN";
 
-long lastMsg = 0;
-
-
 WiFiClient espClient;
 PubSubClient client(espClient);
 
 void setup() {
   setupESP();
-
+  
   Serial.begin(115200);    // Initialize serial communications
   Serial.println(NAME);
 
@@ -71,34 +69,24 @@ void loop() {
   if (!client.connected()) {
     reconnect();
   }
+
   client.loop();
   loopESP();
 }
 
+
 void sendMsg(int ms) {
-  char msg[50];
-  snprintf (msg, 75, "%ld", ms);
+  snprintf (msg, 75, "#%ld", ms);
   Serial.print("Publish message: ");
   Serial.println(msg);
   client.publish(TOPIC, msg);
-
 }
 
 void Sign(int ms) {
-  char msg[50];
   snprintf (msg, 75, "#%ld", ms);
   Serial.print("Publish message: ");
   Serial.println(msg);
   client.publish(SIGNTOPIC, msg);
-}
-
-
-void sendInput(const char *t, int ms) {
-  char msg[50];
-  snprintf (msg, 75, "%ld", ms);
-  Serial.print("Publish message: ");
-  Serial.println(msg);
-  client.publish(t, msg);
 }
 
 void reconnect() {
@@ -112,7 +100,6 @@ void reconnect() {
       client.publish(SIGNTOPIC, NAME);
       // ... and resubscribe
       client.subscribe(TOPIC);
-      client.subscribe("SIGN");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -128,16 +115,7 @@ void callback(char* topic, byte * payload, unsigned int length) {
   Serial.print(topic);
   Serial.print("] ");
   Serial.println((char*)payload);
-  if (strcmp(topic, "SIGN") == 0) {
-    if ((char)payload[1] == '1') {
-      ESP.restart();
-    }
-    if ((char)payload[1] == '0') {
-      client.publish(SIGNTOPIC, NAME);
-    }
-  }
-  else
-  {
-    callbackESP(topic, payload);
-  }
+
+  
+  callbackESP(topic, payload);
 }

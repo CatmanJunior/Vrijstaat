@@ -4,15 +4,15 @@
 #define F1 A4
 #define F2 A5
 #define SerA 2
-#define T1 1
-#define T2 2
-#define B1 0
-#define B2 6
+#define T1 0
+#define T2 4
+#define B1 33
+#define B2 32
 #define Rotary1 35
 #define Rotary2 25
 #define RotarySw 26
-#define KR 5
-#define KL 4
+#define KR 16
+#define KL 17
 
 int pins[] = {
   B1,B2, T1, T2, RotarySw, KL, KR
@@ -59,11 +59,36 @@ void loopESP() {
     if (digitalRead(pins[i]) != high[i]) {
       high[i] = digitalRead(pins[i]);
       Serial.println(String(i) + String(high[i]).toInt());
-      sendMsg((String(i) + String(high[i])).toInt());
+      sendMsg((String(i+1) + String(high[i])).toInt());
+      
     }
   }
 }
 
 void callbackESP(char* topic, byte * payload) {
 
+}
+
+int DecodeR(byte* rgb) {
+  String newR;
+  for (int i = 0; i < 3; i++) {
+    newR += (char)rgb[i];
+  }
+  return newR.toInt();
+}
+
+int DecodeG(byte* rgb) {
+  String newG;
+  for (int i = 0; i < 3; i++) {
+    newG += (char)rgb[i];
+  }
+  return newG.toInt();
+}
+
+int DecodeB(byte* rgb) {
+  String newB;
+  for (int i = 0; i < 3; i++) {
+    newB += (char)rgb[i];
+  }
+  return newB.toInt();
 }

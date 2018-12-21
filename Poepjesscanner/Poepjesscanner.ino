@@ -1,5 +1,6 @@
 const char *NAME = "PoepScanner";
 const char *TOPIC = "poep"; //HB
+const char *SIGNTOPIC = "SIGN/PoepScanner";
 
 #include <SPI.h>
 #include <MFRC522.h>
