@@ -306,6 +306,12 @@ LABUI = {
 		"showtitle"		:	True,
 		},	
 
+	"LICHTBUTTON" : {
+		"fromobject"	:	TEMPLATE["SmallButton"],
+		"text"			:	"LICHT",
+		"function"		:	"SendMqtt('LAB/RELAIS/','1')"
+		},
+
 	"KAST1BUTTON" : {
 		"fromobject"	:	TEMPLATE["SmallButton"],
 		"text"			:	"Kast 1",

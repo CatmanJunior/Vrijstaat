@@ -13,7 +13,7 @@
 CRGB leds[NUM_STRIPS][NUM_LEDS];
 
 const char *NAME = "MedKast";
-const char *TOPIC = "MED"; //HB
+const char *TOPIC = "LAB/MEDKAST";
 
 //  Servo's
 Servo servo[6];  // create servo object to control a servo

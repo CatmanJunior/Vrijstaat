@@ -11,7 +11,7 @@ clock = pygame.time.Clock()
 
 BROKERIP = "192.168.178.40"
 PORT = 1883
-TOPICLIST = ["poep","t0"]
+TOPICLIST = ["LAB/RELAIS/POE","t0"]
 
 CLIENTNAME = "Raspberrry"
 
