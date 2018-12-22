@@ -2,18 +2,16 @@ import PygameUI as pg
 from vrijstaatConst import *
 
 class Group():
-	def __init__(self, name):
+	def __init__(self, name, aantal, age, roomlist):
 		self.name = name
+		self.aantal = aantal
+		self.age = age
 		self.Room = 0
-		self.Rooms = []
-		self.kidList = []
+		self.RoomList = roomlist
+		
+	def nextRoom(self):
+		self.Room += 1
 
-	def addKid(self, kid):
-		self.kidList.append(kid)
-		kid.group = self
-
-	def setRoom(self, Room):
-		self.Room = Room
 
 class Room():
 	def __init__(self, name, ui):
@@ -98,7 +96,7 @@ class ESPModule():
 
 		if "outputs" in kwargs:
 			pg.FromDict(kwargs["outputs"],self.butContainer)
-			
+
 	def Empty(self):
 		self.textbox.lines = []
 

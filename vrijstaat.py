@@ -2,6 +2,8 @@ import datetime
 import PygameUI as pg
 import winsound
 import json
+import logging
+import os
 from vrijstaatConst import *
 from vrijstaatClass import *
 from vrijstaatESPs import *
@@ -42,9 +44,33 @@ PORT = 1883
 CLIENTNAME = "Raspberrry2"
 client = MakeClient(CLIENTNAME)
 
+PGWIDTH = 1080
+PGHEIGHT = 720
+PGFULLSCREEN = False
+
 CurrentRoom = 0
 ActiveBox = 0
 MainActiveBox = 0
+
+groupA = Group("BLAUW", 15, 8, ["NietHier", "Entree","Intro","Expo", "Lab", "Expo_2","Tuin", "Lokmachine", "Didactisch_moment", "Afwikkeling"])
+
+groupB = Group("GROEN", 15, 8, ["NietHier","Intro","Expo", "Expo_extended", "Lab", "Tuin", "Expo_2", "Lokmachine", "Didactisch_moment", "Afwikkeling"])
+
+def initLog():
+    logOrdinalDate = str(datetime.date.today().toordinal())
+    if not os.path.isfile('logs/' + logOrdinalDate + '.log'):
+        with open('logs/' + logOrdinalDate + '.log', 'w') as f:
+            pass
+    logging.basicConfig(filename='logs/' + logOrdinalDate + '.log', filemode='a', format='%(asctime)s %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+
+def StartIntroVideo():
+    pass
+
+def StartAlarm():
+    pass
+
+def PlayTimeBeep():
+    pass
 
 def FakeAll():
 	for e in ESPDict:
@@ -90,9 +116,9 @@ def resetESPS(hardreset=False):
     
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code " + str(rc))
     # for topic in TOPICLIST:
     client.subscribe("#")  # Subscribe to the topic
+    print ("Connected with result code " + str(rc))
 
 def on_message(client, userdata, msg):
     # Convert the message to string. Original it is a byte printed as b'msg'
@@ -124,14 +150,26 @@ def on_message(client, userdata, msg):
                 DEBUGBOX.addLine("ESP unknown")
         for p in puzzleList:
             p.checkReady()
+
+#Init Timers
+appTimer = pg.TimerObject()
+gameTimer = pg.TimerObject()
+
+#Logging
+initLog()
+logging.info('-------------------------------------------------------------------')
+logging.info('Program started')
+logging.info('-------------------------------------------------------------------')
                     
 #Connect to the broker
-MQTTConnect(BROKERIP,PORT,on_connect,on_message)
+mqttConnectCheck = MQTTConnect(BROKERIP,PORT,on_connect,on_message)
+if mqttConnectCheck:
+    logging.info('MQTT Connected in: ' + str(appTimer))
+else:
+    logging.error('MQTT Failed to connect')
 
 #init pygame from the PygameUI module
-pg.PyInit(1080, 720, FULLSCREENMODE = False)
-
-gameTimer = pg.TimerObject()
+pg.PyInit(PGWIDTH, PGHEIGHT, FULLSCREENMODE = PGFULLSCREEN)
 
 pg.FromDict(HEADER)
 pg.FromDict(MAINWINDOW)
@@ -141,7 +179,7 @@ DEBUGBOX = pg.TextBox("MainDebugTextBox", **TEXTBOXES["MainDebugTextBox"])
 pg.ObjectDict["NextRoomButton"].function = lambda : NextRoom()
 pg.ObjectDict["MainWindowButton"].function = lambda: SetNewMainActiveBox(pg.ObjectDict["MainContainer"])
 pg.ObjectDict["ResetButton"].function = lambda: resetESPS()
-# pg.ObjectDict["StartGameButton"].function=lambda: StartGame()
+pg.ObjectDict["StartGameButton"].function=lambda: StartGame()
 pg.ObjectDict["FakeESPButton"].function=lambda: FakeAll()
 
 for esp in ESPDict:
@@ -178,19 +216,22 @@ SetNewMainActiveBox(pg.ObjectDict["MainContainer"])
 def game():
     pg.ObjectDict["GameTimerText"].text =  "Timer: " + str(int(gameTimer.currentTime/1000))
 
-
 gameloop = True
 
 def StartGame():
-	DEBUGBOX.clear()
-	gameTimer.reset()
-	DEBUGBOX.addLine("Start time: " + datetime.datetime.now().strftime("%H:%M:%S"))
-	DEBUGBOX.addLine("Current Room: " + RoomList[CurrentRoom]["Name"])
+    DEBUGBOX.clear()
+    gameTimer.reset()
+    logging.info("Entrance start after: " + str(appTimer))
+    groupA.nextRoom()
+    groupB.nextRoom()
+    pg.TimerEvents[(gameTimer,Tijdsplanning["Binnekomst"])] = PlayTimeBeep
 
 def Intro():
-	DEBUGBOX.lines[-1]= "Intro Start: " + datetime.datetime.now().strftime("%H:%M:%S")
-	DEBUGBOX.addLine("Current Room: " + RoomList[CurrentRoom]["Name"])
-
+    StartIntroVideo()
+	# DEBUGBOX.lines[-1]= "Intro Start: " + datetime.datetime.now().strftime("%H:%M:%S")
+	# DEBUGBOX.addLine("Current Room: " + RoomList[CurrentRoom]["Name"])
+    pg.TimerEvents[(gameTimer,Tijdsplanning["Intro"])] = PlayTimeBeep
+    
 while gameloop:
     game()
     gameloop = pg.GameLoop()

@@ -27,8 +27,7 @@ def MQTTConnect(ip, port, on_con, on_mess):
         client.on_message = on_mess
         client.connect(ip, port=port, keepalive=180)
         client.loop_start()
-
-        print("Connected to Mqtt server")
+        
         return True
     except:
         print("Cannot connect to the Mqtt Server")

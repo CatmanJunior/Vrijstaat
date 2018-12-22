@@ -29,7 +29,7 @@ def addDict(base, adder):
 	adder.update(base)
 	return adder
 
-
+TimerEvents = {}
 
 
 #Creates a ui from a dictionary
@@ -106,7 +106,7 @@ def GameLoop():
 				ObjectDict.move_to_end(but.name)
 				if but.rect.collidepoint(mouse_pos):
 					if but.visable:
-						
+
 						# print("Button Pressed: " + (but.name) + " : " +  str(but.function))
 						but.use()
 						break
@@ -128,6 +128,10 @@ def GameLoop():
 
 	for t in TimerList:
 		t.currentTime = pygame.time.get_ticks() - t.startTime
+	for t in TimerEvents:
+		if t[0].currentTime > t[1]:
+			# TimerEvents[t]()
+			print(TimerEvents[t])
 
 	pygame.display.update()			
 	pygame.display.flip()
@@ -237,7 +241,6 @@ class Container(UIObject):
 		super().draw()
 
 	def addObject(self, obj):
-		
 		if self.autofit:
 			if self.lastobject[0] + obj.rect.width > self.rect.width:
 				self.lastobject = (5, self.lastobject[1] + obj.rect.height + 5)

@@ -57,7 +57,7 @@ ESPDict = {
 					"M1" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
 						"text"			:	"1",
-						"function"		:	"SendMqtt('MusicPlayer','text1.mp3')"
+						"function"		:	"SendMqtt('IntroVideo','text1.mp3')"
 						},
 					"M2" : {
 						"fromobject"	:	TEMPLATE["SmallButton"],
@@ -211,6 +211,19 @@ ESPDict = {
 						"text"			:	"PuzLight",
 						"function"		:	"SendMqtt('LAB/RELAIS/PUZZEL','1')",
 						"offfunction"	:	"SendMqtt('LAB/RELAIS/PUZZEL','0')",
+						},
+					},
+		},
+
+	"LabKey"			: {
+		"topic"	:	"LAB/labkey",
+		"sign"	:	"LABKEY",
+		"outputs":	{
+					"LabTLPuz" : {
+						"fromobject"	:	TEMPLATE["SmallToggleButton"],
+						"text"			:	"Open",
+						"function"		:	"SendMqtt('LAB/labkey','a1')",
+						"offfunction"	:	"SendMqtt('LAB/labkey','a2')",
 						},
 					},
 		},

@@ -7,6 +7,17 @@ RED = [255,0,0]
 
 TOPICLIST = ["SIGN", "LAB/#", "TUIN/#", "EXPO/#"]
 
+#Binnenkomst
+Tijdsplanning = {
+	"Binnekomst" 	: 600000, 	#10 min
+	"Intro"			: 150000,	#2,5 min
+	"Expo"			: 900000,	#15 min
+	"Alarm"			: 150000,	#2,5 min
+	"Splitsen"		: 60000,	#1 min
+}
+
+
+
 # Vars to identify ESPs
 ESPlist = []
 
