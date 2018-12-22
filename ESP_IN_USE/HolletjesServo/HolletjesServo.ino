@@ -1,6 +1,6 @@
 #include <Servo.h>
 const char *NAME = "HolletjesServo";
-const char *TOPIC = "HB"; //HB
+const char *TOPIC = "TUIN/HOL/#";
 
 Servo servoA;  // create servo object to control a servo
 Servo servoB;

@@ -15,8 +15,8 @@ PORT = 1883
 CLIENTNAME = "LabBerry"
 client = mqtt.Client(CLIENTNAME)
 topic = "LAB/LABBERRY/PANEL/#"
-kasttopic = "LAB/LABBERRY/MEDKAST/#"
-crushertopic = "LAB/LABBERRY/CRUSHER/#"
+kasttopic = "LAB/MEDKAST/#"
+crushertopic = "LAB/CRUSHER/#"
 c=1
 
 codelist = "1234# 2345# 3793# 4600# 7777# 8888#".split()
@@ -34,12 +34,12 @@ pg.KeyMethod = keymethod
 keywordlist = "null t1 t2 b1 b2	kr	kl	rSw	rP f1 f2 time repeat".split()
 	#0	t1 	t2 	b1	b2	kr	kl	rSw	rP	f1	f2 time repeat 
 orderlist = [
-	[2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	 0,0],
-	[0,	2,	2,	0,	0,	1,	1,	0,	2,	2,	2,	 0,0],
-	[0,	2,	2,	1,	0,	1,	1,	0,	2,	2,	2,	 0,5],
-	[0,	2,	2,	2,	2,	2,	2,	0,	2,	2,	2,	 0,0],
-	[0,	1,	0,	0,	0,	0,	0,	0,	0,	2,	2,	 5,0],
-	[0,	0,	1,	0,	0,	0,	0,	0,	0,	2,	2,	 0,0],
+	[2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	2,	 0,	0],
+	[0,	2,	2,	0,	0,	1,	1,	0,	2,	2,	2,	 0,	0],
+	[0,	2,	2,	1,	0,	1,	1,	0,	2,	2,	2,	 0,	5],
+	[0,	2,	2,	2,	2,	2,	2,	0,	2,	2,	2,	 0,	0],
+	[0,	1,	0,	0,	0,	0,	0,	0,	0,	2,	2,	 5,	0],
+	[0,	0,	1,	0,	0,	0,	0,	0,	0,	2,	2,	 0,	0],
 	]
 
 inputTimer = pg.TimerObject()
@@ -113,8 +113,8 @@ def on_message(client, userdata, msg):
           " Payload: " + str(msg.payload))
     if msg.topic == topic[:-1]:
     	txt.text = "Kleur Code: " + msg.payload
-    if msg.topic.startswith(crushertopic[:-1]):
-    	checkInput( msg.topic[len(crushertopic[:-1]):],msg.payload)
+    if msg.topic.startswith(crushertopic[:-2]):
+    	checkInput(msg.topic[len(crushertopic[:-2]):],msg.payload)
     if msg.topic == "SIGN":
     	if msg.payload == "0":
     		client.publish("SIGN", "LabBerry")

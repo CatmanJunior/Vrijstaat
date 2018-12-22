@@ -4,6 +4,7 @@ import winsound
 import json
 from vrijstaatConst import *
 from vrijstaatClass import *
+from vrijstaatESPs import *
 from MqttClass import MakeClient, MQTTConnect, SendMqtt
 
 #TODOLIST
@@ -18,9 +19,9 @@ from MqttClass import MakeClient, MQTTConnect, SendMqtt
 	- Group Size
 	- Schools/weekend
 - The playtrough needs to be automated
-    - Just give a start signal, and at some points a que where there isnt a device that controls the que
+    - Just give a start signal, and at some points a que where there isnt a device that controls the que.
     - Gives signals when a certain Room is behind scedule. 
-    - Give hints based on time and puzzles
+    - Give hints based on time and puzzles.
 - Text to speech for debugging
 	- Create file then play it and remove it when it's done
 - Soundplayer based on Room

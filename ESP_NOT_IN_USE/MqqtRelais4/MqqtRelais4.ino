@@ -5,18 +5,25 @@
 const char *ssid =  "Vrijstaat";     // change according to your Network - cannot be longer than 32 characters!
 const char *pass =  "vrijstaat"; // change according to your Network
 const char *mqtt_server = "192.168.178.40";
+const char *NAME = "Relais1";
+const char *TOPIC = "R1"; //HB
 
-const int SIGNNUM = 0;
-const char *SIGNTOPIC = "SIGN";
-
-long lastMsg = 0;
-char msg[50];
+const int SIGNNUM = 2;
+const char *SIGNTOPIC = "SIGN"; //HB
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+long lastMsg = 0;
+char msg[50];
+
 void setup() {
-  setupESP();
+  //D3 and D4 keep being HIGH despite not being HIGH, DONT USE FOR INPUT
+  pinMode(5, OUTPUT);  //D1
+  pinMode(4, OUTPUT);  //D2
+  pinMode(16, OUTPUT); //D0
+  pinMode(14, OUTPUT); //D5
+  pinMode(12, OUTPUT); //D6
 
   Serial.begin(115200);    // Initialize serial communications
   Serial.println(NAME);
@@ -74,9 +81,8 @@ void loop() {
   }
 
   client.loop();
-  loopESP();
-}
 
+}
 
 void sendMsg(int ms) {
   snprintf (msg, 75, "#%ld", ms);
@@ -103,7 +109,6 @@ void reconnect() {
       client.publish(SIGNTOPIC, NAME);
       // ... and resubscribe
       client.subscribe(TOPIC);
-      client.subscribe("SIGN");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -114,21 +119,37 @@ void reconnect() {
   }
 }
 
-void callback(char* topic, byte * payload, unsigned int length) {
+
+void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
   Serial.println((char*)payload);
-  if (strcmp(topic, "SIGN") == 0) {
-    if ((char)payload[0] == '1') {
-      ESP.restart();
-    }
-    if ((char)payload[0] == '0') {
-      client.publish(SIGNTOPIC, NAME);
-    }
+
+  if ((char)payload[1] == '3') {
+    digitalWrite(5,LOW);
   }
-else
-  {
-    callbackESP(topic, payload);
+  if ((char)payload[1] == '4') {
+    digitalWrite(5,HIGH);
   }
+  if ((char)payload[1] == '5') {
+     digitalWrite(4,LOW);
+  }
+  if ((char)payload[1] == '6') {
+     digitalWrite(4,HIGH);
+  }
+  if ((char)payload[1] == '7') {
+     digitalWrite(16,LOW);
+  }
+  if ((char)payload[1] == '8') {
+     digitalWrite(16,HIGH);
+  }
+  if ((char)payload[1] == '9') {
+     digitalWrite(14,LOW);
+  }
+  if ((char)payload[1] == '0') {
+     digitalWrite(14,HIGH);
+  }
+
+
 }

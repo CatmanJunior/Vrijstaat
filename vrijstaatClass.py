@@ -98,6 +98,7 @@ class ESPModule():
 
 		if "outputs" in kwargs:
 			pg.FromDict(kwargs["outputs"],self.butContainer)
+			
 	def Empty(self):
 		self.textbox.lines = []
 

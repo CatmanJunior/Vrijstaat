@@ -1,5 +1,5 @@
 const char *NAME = "HolletjesButton";
-const char *TOPIC = "LAB/HOL/BUTTONS";
+const char *TOPIC = "TUIN/HOL/BUTTONS";
 
 bool A;
 bool B;

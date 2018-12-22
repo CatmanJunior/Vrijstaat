@@ -1,11 +1,10 @@
-#include <WiFi.h>
+#include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoOTA.h>
 const char *ssid =  "Vrijstaat";     // change according to your Network - cannot be longer than 32 characters!
 const char *pass =  "vrijstaat"; // change according to your Network
 const char *mqtt_server = "192.168.178.40";
 
-const int SIGNNUM = 0;
 const char *SIGNTOPIC = "SIGN";
 
 long lastMsg = 0;
@@ -76,7 +75,6 @@ void loop() {
   loopESP();
 }
 
-
 void sendMsg(int ms) {
   snprintf (msg, 75, "#%ld", ms);
   Serial.print("Publish message: ");
@@ -119,10 +117,10 @@ void callback(char* topic, byte * payload, unsigned int length) {
   Serial.print("] ");
   Serial.println((char*)payload);
   if (strcmp(topic, "SIGN") == 0) {
-    if ((char)payload[1] == '1') {
+    if ((char)payload[0] == '1') {
       ESP.restart();
     }
-    if ((char)payload[1] == '0') {
+    if ((char)payload[0] == '0') {
       client.publish(SIGNTOPIC, NAME);
     }
   }

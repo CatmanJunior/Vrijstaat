@@ -103,9 +103,11 @@ def GameLoop():
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			mouse_pos = event.pos
 			for but in ButtonList:
+				ObjectDict.move_to_end(but.name)
 				if but.rect.collidepoint(mouse_pos):
 					if but.visable:
-						print("Button Pressed: " + (but.name) + " : " +  str(but.function))
+						
+						# print("Button Pressed: " + (but.name) + " : " +  str(but.function))
 						but.use()
 						break
 			else:
